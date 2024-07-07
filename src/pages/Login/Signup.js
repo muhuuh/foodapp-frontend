@@ -40,22 +40,32 @@ const SignUp = () => {
       return;
     }
 
-    const { user, error } = await signUp(email, password);
-    if (error) {
-      setMessage(`Error: ${error.message}`);
-      console.error("Sign Up Error:", error);
-    } else {
+    const signUpData = await signUp(email, password);
+    console.log("signUpData");
+    console.log(signUpData);
+    if (signUpData.error) {
+      //setMessage(`Error: ${error.message}`);
+
+      console.error("Sign Up Error:", signUpData.error);
+    }
+    setMessage(
+      "Bestätigungsemail wurde zugesandt. Überprüfen Sie auch den Spam Folder."
+    );
+    /*
+    else {
       // Immediately sign in the user to ensure they are authenticated
       const { user: signedInUser, error: signInError } = await signIn(
         email,
         password
       );
+      
       if (signInError) {
         setMessage(`Error signing in: ${signInError.message}`);
         console.error("Sign In Error:", signInError);
         return;
       }
     }
+      */
   };
 
   return (

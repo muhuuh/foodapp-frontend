@@ -1,70 +1,90 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import supabase from "../services/supabase/supabase";
 
-//----------------------Database connection ----------
+// Async thunk to fetch user profile from the database
+export const fetchUserProfile = createAsyncThunk(
+  "user/fetchUserProfile",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
 
-export const fetchUser = createAsyncThunk();
-
-export const saveData = createAsyncThunk(
-  "inventory/saveData",
-  async ({ tableName, dataToSave, type, callback }, { getState }) => {
-    /*
-    const userId = getState().inventory.userId;
-    console.log("User ID:", userId);
-
-    let data = null;
-    let error = null;
-    const id = uuidv4();
-
-    if (type === "newOrder") {
-      const { user, sellers, order, total_order_value } = dataToSave;
-      console.log("dataToSave");
-      console.log(dataToSave);
-
-      const response = await supabase.from(tableName).insert([dataToSave]);
-
-      data = response.data;
-      error = response.error;
+      if (error) {
+        throw new Error(error.message);
+      }
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.message);
     }
-
-    if (error) {
-      console.error("Error saving data:", error.message);
-      throw error;
-    } else {
-      return { type, data };
-    }
-      */
   }
 );
 
-//----------------------Redux functions----------
+// Async thunk to update user profile in the database
+export const updateUserProfileInDB = createAsyncThunk(
+  "user/updateUserProfileInDB",
+  async (profileData, { rejectWithValue }) => {
+    try {
+      const { id, ...updateData } = profileData;
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .update(updateData)
+        .eq("id", id);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+      return data[0]; // Return the updated profile
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
 
 const defaultState = {
-  userProfil: {},
+  userProfile: {},
+  loading: false,
+  error: null,
 };
 
 const usersSlice = createSlice({
   name: "user",
   initialState: defaultState,
   reducers: {
-    updateUserProfil(state, action) {
-      state.userProfil = action.payload;
+    updateUserProfileLocal(state, action) {
+      state.userProfile = { ...state.userProfile, ...action.payload };
     },
   },
-
   extraReducers: (builder) => {
-    builder.addCase(fetchUser.fulfilled, (state, action) => {
-      switch (action.payload.type) {
-        case "rawData":
-          state.fetchUser = action.payload.data;
-          break;
-
-        default:
-          console.warn(`Unhandled type: ${action.payload.type}`);
-      }
-    });
+    builder
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userProfile = action.payload;
+      })
+      .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateUserProfileInDB.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUserProfileInDB.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userProfile = action.payload;
+      })
+      .addCase(updateUserProfileInDB.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
-export const usersActions = usersSlice.actions;
-export default usersSlice;
+export const { updateUserProfileLocal } = usersSlice.actions;
+export default usersSlice.reducer;

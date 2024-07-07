@@ -1,5 +1,5 @@
-import Signin from "./components/Login/Signin";
-import SignUp from "./components/Login/Signup";
+import Signin from "./pages/Login/Signin";
+import SignUp from "./pages/Login/Signup";
 import ResetPassword from "./components/Login/ResetPassword";
 import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "./services/supabase/PrivateRoute";
