@@ -39,7 +39,6 @@ const Settings = () => {
     <div>
       <h1>User Profile</h1>
       {loading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
       <input
         type="text"
         value={username}
