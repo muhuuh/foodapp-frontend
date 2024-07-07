@@ -37,21 +37,31 @@ export const AuthProvider = ({ children }) => {
     return { user: data.user, error };
   };
 
+  const signIn = async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    setUser(data?.user);
+    return { user: data?.user, error };
+  };
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
+
+  const passwordRecovery = async (email) =>
+    supabase.auth.resetPasswordForEmail(email, {
+      //redirectTo: "https://www.flavourbyte.de/reset_password",
+      redirectTo: "http://localhost:3000/reset_password",
+    });
+
   const value = {
     signUp,
-    signIn: async (email, password) => {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      setUser(data?.user);
-      return { user: data?.user, error };
-    },
-    passwordRecovery: (email) =>
-      supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://www.flavourbyte.de/reset_password",
-      }),
-    signOut: () => supabase.auth.signOut(),
+    signIn,
+    passwordRecovery,
+    signOut,
     user,
     loading,
   };
