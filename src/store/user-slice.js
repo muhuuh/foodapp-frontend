@@ -45,6 +45,7 @@ export const updateUserProfileInDB = createAsyncThunk(
 
 const defaultState = {
   userProfile: {},
+  userId: null,
   loading: false,
   error: null,
 };
@@ -55,6 +56,9 @@ const usersSlice = createSlice({
   reducers: {
     updateUserProfileLocal(state, action) {
       state.userProfile = { ...state.userProfile, ...action.payload };
+    },
+    setUserId(state, action) {
+      state.userId = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -86,5 +90,5 @@ const usersSlice = createSlice({
   },
 });
 
-export const { updateUserProfileLocal } = usersSlice.actions;
+export const { updateUserProfileLocal, setUserId } = usersSlice.actions;
 export default usersSlice.reducer;
