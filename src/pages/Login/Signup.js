@@ -44,13 +44,15 @@ const SignUp = () => {
     console.log("signUpData");
     console.log(signUpData);
     if (signUpData.error) {
-      //setMessage(`Error: ${error.message}`);
+      setMessage(`Error: ${signUpData.error}`);
 
       console.error("Sign Up Error:", signUpData.error);
+    } else {
+      setMessage(
+        "Bestätigungsemail wurde zugesandt. Überprüfen Sie auch den Spam Folder."
+      );
     }
-    setMessage(
-      "Bestätigungsemail wurde zugesandt. Überprüfen Sie auch den Spam Folder."
-    );
+
     /*
     else {
       // Immediately sign in the user to ensure they are authenticated

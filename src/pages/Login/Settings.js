@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   fetchUserProfile,
   updateUserProfileLocal,
   updateUserProfileInDB,
-} from "./store/user-slice";
+} from "../../store/user-slice";
 
 const Settings = () => {
   const dispatch = useDispatch();
@@ -12,6 +13,10 @@ const Settings = () => {
     (state) => state.users
   );
   const [username, setUsername] = useState(userProfile.username || "");
+
+  console.log("userId");
+  console.log(userId);
+  console.log(userProfile);
 
   useEffect(() => {
     if (userId) {

@@ -8,6 +8,7 @@ import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "./services/supabase/PrivateRoute";
 
 import { fetchUserProfile, setUserId } from "./store/user-slice";
+import Settings from "./pages/Login/Settings";
 
 function App() {
   const dispatch = useDispatch();
@@ -37,6 +38,8 @@ function App() {
   //------------------ fetch user profil -----------------
   useEffect(() => {
     if (userId) {
+      console.log("fetch profil");
+      console.log(userId);
       dispatch(fetchUserProfile(userId));
     }
   }, [dispatch, userId]);
@@ -48,7 +51,7 @@ function App() {
       <Route path="/signin" element={<Signin />} />
       <Route path="/reset_password" element={<ResetPassword />} />
       <Route element={<PrivateRoute />}>
-        <Route path="/main_view" element={<SignUp />} />
+        <Route path="/main_view" element={<Settings />} />
       </Route>
     </Routes>
   );
