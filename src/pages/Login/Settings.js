@@ -1,28 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { AuthContext } from "../../services/supabase/authContext";
 
 import {
-  fetchUserProfile,
   updateUserProfileLocal,
   updateUserProfileInDB,
 } from "../../store/user-slice";
 
 const Settings = () => {
   const dispatch = useDispatch();
-  const { userProfile, userId, loading, error } = useSelector(
-    (state) => state.users
-  );
+  const { userProfile, userId, loading } = useSelector((state) => state.users);
   const [username, setUsername] = useState(userProfile.username || "");
+  const { signOut } = useContext(AuthContext);
 
-  console.log("userId");
-  console.log(userId);
-  console.log(userProfile);
+  //------------log out --------------
 
-  useEffect(() => {
-    if (userId) {
-      dispatch(fetchUserProfile(userId));
-    }
-  }, [dispatch, userId]);
+  //-------------Update profil info -------------
 
   useEffect(() => {
     if (userProfile.username) {
@@ -45,6 +38,7 @@ const Settings = () => {
         onChange={(e) => setUsername(e.target.value)}
       />
       <button onClick={handleUpdate}>Update</button>
+      <button onClick={() => signOut()}>Sign out</button>
     </div>
   );
 };

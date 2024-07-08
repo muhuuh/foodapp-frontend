@@ -9,6 +9,7 @@ import PrivateRoute from "./services/supabase/PrivateRoute";
 
 import { fetchUserProfile, setUserId } from "./store/user-slice";
 import Settings from "./pages/Login/Settings";
+import RecipeMain from "./pages/Recipe/RecipeMain";
 
 function App() {
   const dispatch = useDispatch();
@@ -38,20 +39,20 @@ function App() {
   //------------------ fetch user profil -----------------
   useEffect(() => {
     if (userId) {
-      console.log("fetch profil");
-      console.log(userId);
       dispatch(fetchUserProfile(userId));
     }
   }, [dispatch, userId]);
 
   return (
     <Routes>
-      <Route path="/" element={<SignUp />} />
+      <Route path="/" element={<Signin />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/signin" element={<Signin />} />
       <Route path="/reset_password" element={<ResetPassword />} />
       <Route element={<PrivateRoute />}>
         <Route path="/main_view" element={<Settings />} />
+        <Route path="/recipe" element={<RecipeMain />} />
+        <Route path="/settings" element={<Settings />} />
       </Route>
     </Routes>
   );
