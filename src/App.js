@@ -1,3 +1,4 @@
+// App.js
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import supabase from "./services/supabase/supabase";
@@ -8,6 +9,7 @@ import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "./services/supabase/PrivateRoute";
 
 import { fetchUserProfile, setUserId } from "./store/user-slice";
+import { fetchRecipes } from "./store/recipe-slice";
 import Settings from "./pages/Login/Settings";
 import RecipeMain from "./pages/Recipe/RecipeMain";
 import RecipeOverview from "./pages/Recipe/RecipeOverview";
@@ -37,10 +39,17 @@ function App() {
     });
   }, [dispatch]);
 
-  //------------------ fetch user profil -----------------
+  //------------------ fetch user profile -----------------
   useEffect(() => {
     if (userId) {
       dispatch(fetchUserProfile(userId));
+    }
+  }, [dispatch, userId]);
+
+  //------------------ fetch recipes -----------------
+  useEffect(() => {
+    if (userId) {
+      dispatch(fetchRecipes(userId));
     }
   }, [dispatch, userId]);
 

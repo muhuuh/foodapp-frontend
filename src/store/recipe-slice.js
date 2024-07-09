@@ -1,15 +1,16 @@
+// store/recipesSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import supabase from "../services/supabase/supabase";
 
-// Async thunk to fetch user profile from the database
+// Async thunk to fetch recipes from the database
 export const fetchRecipes = createAsyncThunk(
-  "recipes/recipe",
+  "recipes/fetchRecipes",
   async (userId, { rejectWithValue }) => {
     try {
       const { data, error } = await supabase
         .from("recipes")
         .select("*")
-        .eq("id", userId);
+        .eq("user_id", userId);
 
       if (error) {
         throw new Error(error.message);
