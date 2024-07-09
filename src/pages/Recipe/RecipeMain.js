@@ -1,5 +1,6 @@
 // components/RecipeMain.js
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getRecipeFromAI } from "../../services/openaiApi";
 import IngredientInput from "./IngredientInput";
 import Title from "../../components/General/Title";
@@ -9,13 +10,13 @@ import TextAIInputs from "../../components/AI/TextAIInputs";
 import LoadingSpinner from "../../components/General/LoadingSpinner";
 
 const RecipeMain = () => {
-  const [recipe, setRecipe] = useState(null);
   const [additionalOptions, setAdditionalOptions] = useState({});
   const [file, setFile] = useState(null);
   const [ingredients, setIngredients] = useState([]);
   const [userInput, setUserInput] = useState("");
   const [showIngredients, setShowIngredients] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const title = "Rezepte";
   const options = [
@@ -55,13 +56,13 @@ const RecipeMain = () => {
     setIsLoading(true);
     try {
       const optionsArray = Object.values(additionalOptions);
-      const result = await getRecipeFromAI(
+      const recipes = await getRecipeFromAI(
         userInput,
         optionsArray,
         file,
         ingredients
       );
-      setRecipe(result);
+      navigate("/recipe_overview", { state: { recipes } });
     } catch (error) {
       console.error("Fehler beim Abrufen des Rezepts:", error);
     } finally {
@@ -97,15 +98,6 @@ const RecipeMain = () => {
         <div className="flex flex-col items-center mt-4">
           <LoadingSpinner />
           <span className="text-sm text-gray-600">Bitte 10s warten...</span>
-        </div>
-      )}
-      {recipe && (
-        <div className="mt-4">
-          <h2 className="text-xl font-bold">{recipe.recipe_title}</h2>
-          <h3 className="text-lg mt-2">Zutaten</h3>
-          <p>{recipe.ingredients}</p>
-          <h3 className="text-lg mt-2">Anweisungen</h3>
-          <p>{recipe.instructions}</p>
         </div>
       )}
     </div>
