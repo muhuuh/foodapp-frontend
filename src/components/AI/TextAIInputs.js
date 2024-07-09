@@ -1,29 +1,24 @@
+// components/TextAIInputs.js
 import React, { useState } from "react";
 
-const TextAIInputs = ({ onSubmit, instructions }) => {
+const TextAIInputs = ({ onInputChange, instructions }) => {
   const [userInput, setUserInput] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(userInput);
-    setUserInput("");
+  const handleChange = (e) => {
+    const input = e.target.value;
+    setUserInput(input);
+    onInputChange(input);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4">
+    <div className="mb-4">
       <textarea
         className="block w-full p-2 mb-2 border rounded"
         value={userInput}
-        onChange={(e) => setUserInput(e.target.value)}
+        onChange={handleChange}
         placeholder={instructions}
       />
-      <button
-        type="submit"
-        className="block w-full p-2 bg-teal-500 text-white rounded"
-      >
-        Ask AI
-      </button>
-    </form>
+    </div>
   );
 };
 

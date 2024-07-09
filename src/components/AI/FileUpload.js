@@ -1,12 +1,9 @@
 // components/FileUpload.js
-import React, { useState } from "react";
+import React from "react";
 
 const FileUpload = ({ onFileUpload }) => {
-  const [file, setFile] = useState(null);
-
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
-    setFile(uploadedFile);
     onFileUpload(uploadedFile);
   };
 
