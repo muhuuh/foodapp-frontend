@@ -66,9 +66,16 @@ const RecipeMain = () => {
         file,
         ingredients
       );
-      await dispatch(saveRecipesToDB({ userId, recipes }));
-      dispatch(addRecipesToStore(recipes));
-      navigate("/recipe_overview", { state: { recipes } });
+
+      // Transform AI output to match the structure in Supabase
+      const formattedRecipes = recipes.map((recipe) => ({
+        user_id: userId,
+        recipe_info: recipe,
+      }));
+
+      await dispatch(saveRecipesToDB({ userId, recipes: formattedRecipes }));
+      dispatch(addRecipesToStore(formattedRecipes));
+      navigate("/recipe_overview");
     } catch (error) {
       console.error("Fehler beim Abrufen des Rezepts:", error);
     } finally {
@@ -89,13 +96,11 @@ const RecipeMain = () => {
         onChange={handleIngredientChange}
         showIngredients={showIngredients}
       />
-
       <TextAIInputs
         instructions={instructions}
         onInputChange={handleInputChange}
       />
       <FileUpload onFileUpload={handleFileUpload} />
-
       <button
         onClick={handleAIInputSubmit}
         className="block w-full p-2 bg-teal-500 text-white rounded mt-4"
@@ -104,9 +109,7 @@ const RecipeMain = () => {
       </button>
       {isLoading && (
         <div className="flex flex-col items-center mt-4">
-          <div className="w-full  flex items-center justify-center">
-            <LoadingSpinner />
-          </div>{" "}
+          <LoadingSpinner />
           <span className="text-sm text-gray-600">Bitte 10s warten...</span>
         </div>
       )}

@@ -39,7 +39,7 @@ export const saveRecipesToDB = createAsyncThunk(
       if (error) {
         throw new Error(error.message);
       }
-      return data;
+      return data; // return inserted data
     } catch (err) {
       return rejectWithValue(err.message);
     }
@@ -57,7 +57,7 @@ const recipesSlice = createSlice({
   initialState: defaultState,
   reducers: {
     addRecipesToStore(state, action) {
-      state.recipes.push(...action.payload);
+      state.recipes = [...state.recipes, ...action.payload];
     },
   },
   extraReducers: (builder) => {
@@ -80,7 +80,10 @@ const recipesSlice = createSlice({
       })
       .addCase(saveRecipesToDB.fulfilled, (state, action) => {
         state.loading = false;
-        state.recipes.push(...action.payload);
+        // Ensure action.payload is an array before spreading
+        if (Array.isArray(action.payload)) {
+          state.recipes = [...state.recipes, ...action.payload];
+        }
       })
       .addCase(saveRecipesToDB.rejected, (state, action) => {
         state.loading = false;
