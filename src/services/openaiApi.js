@@ -53,10 +53,11 @@ const generatePrompt = (userInput, additionalOptions, file, ingredients) => {
     .map((item) => `${item.ingredient}: ${item.quantity}`)
     .join(", ");
   let fileString = file
-    ? `Ein Bild des Gerichts ist auch vorhanden.`
+    ? `Ein Bild des Gerichts ist auch vorhanden: ${file}`
     : `Es wurde kein Bild des Gerichts bereitgestellt.`;
 
-  return `Der Benutzer möchte folgendes essen: ${userInput}. Zusätzliche Optionen: ${optionsString}. Zutaten und Mengen: ${ingredientsString}. ${fileString} Bitte geben Sie ein Rezept im strengen JSON-Format mit der folgenden Struktur zurück: {"recipe_title": "Titel des Rezepts", "ingredients": "Liste der Zutaten", "instructions": "Schritt-für-Schritt-Anweisungen"}. Geben Sie nur die JSON-Antwort zurück, ohne zusätzlichen Text. Beispielantwort: {"recipe_title": "Spaghetti Bolognese", "ingredients": "Spaghetti, Hackfleisch, Tomatensauce, Zwiebeln, Knoblauch", "instructions": "1. Spaghetti kochen. 2. Die Sauce zubereiten. 3. Mischen und servieren."}.`;
+  return `Der Benutzer möchte folgendes essen: ${userInput}. Zusätzliche wichtige Details und klarstellungen zum Rezept die befolgt werden müssen: ${optionsString}. Folgende Zutaten müssen im Rezept drin sein (Mengen versuchen zu treffen): ${ingredientsString}. ${fileString} 
+  Bitte geben Sie ein Rezept im strengen JSON-Format mit der folgenden Struktur zurück: {"recipe_title": "Titel des Rezepts", "ingredients": "Liste der Zutaten", "instructions": "Schritt-für-Schritt-Anweisungen"}. Geben Sie nur die JSON-Antwort zurück, ohne zusätzlichen Text. Beispielantwort: {"recipe_title": "Spaghetti Bolognese", "ingredients": "Spaghetti, Hackfleisch, Tomatensauce, Zwiebeln, Knoblauch", "instructions": "1. Spaghetti kochen. 2. Die Sauce zubereiten. 3. Mischen und servieren."}.`;
 };
 
 const parseResult = (result) => {
@@ -80,11 +81,3 @@ const parseResult = (result) => {
     };
   }
 };
-
-/*
-const generatePrompt = (userInput, additionalOptions) => {
-  return `Der Benutzer möchte folgendes essen: ${userInput}. Zusätzliche Optionen: ${additionalOptions.join(
-    ", "
-  )}. Bitte geben Sie ein Rezept im strengen JSON-Format mit der folgenden Struktur zurück: {"recipe_title": "Titel des Rezepts", "ingredients": "Liste der Zutaten", "instructions": "Schritt-für-Schritt-Anweisungen"}. Geben Sie nur die JSON-Antwort zurück, ohne zusätzlichen Text. Beispielantwort: {"recipe_title": "Spaghetti Bolognese", "ingredients": "Spaghetti, Hackfleisch, Tomatensauce, Zwiebeln, Knoblauch", "instructions": "1. Spaghetti kochen. 2. Die Sauce zubereiten. 3. Mischen und servieren."}.`;
-};
-*/
