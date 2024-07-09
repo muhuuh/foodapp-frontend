@@ -1,4 +1,4 @@
-import classes from "../../LoadingSpinner.modules.css";
+import classes from "./LoadingSpinner.module.css";
 
 const LoadingSpinner = (props) => {
   return (

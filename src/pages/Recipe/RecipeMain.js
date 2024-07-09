@@ -89,11 +89,13 @@ const RecipeMain = () => {
         onChange={handleIngredientChange}
         showIngredients={showIngredients}
       />
+
       <TextAIInputs
         instructions={instructions}
         onInputChange={handleInputChange}
       />
       <FileUpload onFileUpload={handleFileUpload} />
+
       <button
         onClick={handleAIInputSubmit}
         className="block w-full p-2 bg-teal-500 text-white rounded mt-4"
@@ -102,7 +104,9 @@ const RecipeMain = () => {
       </button>
       {isLoading && (
         <div className="flex flex-col items-center mt-4">
-          <LoadingSpinner />
+          <div className="w-full  flex items-center justify-center">
+            <LoadingSpinner />
+          </div>{" "}
           <span className="text-sm text-gray-600">Bitte 10s warten...</span>
         </div>
       )}
