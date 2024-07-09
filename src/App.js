@@ -10,6 +10,7 @@ import PrivateRoute from "./services/supabase/PrivateRoute";
 import { fetchUserProfile, setUserId } from "./store/user-slice";
 import Settings from "./pages/Login/Settings";
 import RecipeMain from "./pages/Recipe/RecipeMain";
+import RecipeOverview from "./pages/Recipe/RecipeOverview";
 
 function App() {
   const dispatch = useDispatch();
@@ -52,6 +53,7 @@ function App() {
       <Route element={<PrivateRoute />}>
         <Route path="/main_view" element={<Settings />} />
         <Route path="/recipe" element={<RecipeMain />} />
+        <Route path="/recipe_overview" element={<RecipeOverview />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
     </Routes>

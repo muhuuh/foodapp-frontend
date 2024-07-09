@@ -6,6 +6,7 @@ import Title from "../../components/General/Title";
 import OptionalInputs from "../../components/AI/OptionalInputs";
 import FileUpload from "../../components/AI/FileUpload";
 import TextAIInputs from "../../components/AI/TextAIInputs";
+import LoadingSpinner from "../../components/General/LoadingSpinner";
 
 const RecipeMain = () => {
   const [recipe, setRecipe] = useState(null);
@@ -14,6 +15,7 @@ const RecipeMain = () => {
   const [ingredients, setIngredients] = useState([]);
   const [userInput, setUserInput] = useState("");
   const [showIngredients, setShowIngredients] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const title = "Rezepte";
   const options = [
@@ -50,6 +52,7 @@ const RecipeMain = () => {
   };
 
   const handleAIInputSubmit = async () => {
+    setIsLoading(true);
     try {
       const optionsArray = Object.values(additionalOptions);
       const result = await getRecipeFromAI(
@@ -61,6 +64,8 @@ const RecipeMain = () => {
       setRecipe(result);
     } catch (error) {
       console.error("Fehler beim Abrufen des Rezepts:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -88,6 +93,12 @@ const RecipeMain = () => {
       >
         Ask AI
       </button>
+      {isLoading && (
+        <div className="flex flex-col items-center mt-4">
+          <LoadingSpinner />
+          <span className="text-sm text-gray-600">Bitte 10s warten...</span>
+        </div>
+      )}
       {recipe && (
         <div className="mt-4">
           <h2 className="text-xl font-bold">{recipe.recipe_title}</h2>
