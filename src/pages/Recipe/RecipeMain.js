@@ -71,6 +71,7 @@ const RecipeMain = () => {
       const formattedRecipes = recipes.map((recipe) => ({
         user_id: userId,
         recipe_info: recipe,
+        created_at: new Date().toISOString(), // Add timestamp for sorting
       }));
 
       await dispatch(saveRecipesToDB({ userId, recipes: formattedRecipes }));

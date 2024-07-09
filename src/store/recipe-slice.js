@@ -10,7 +10,8 @@ export const fetchRecipes = createAsyncThunk(
       const { data, error } = await supabase
         .from("recipes")
         .select("*")
-        .eq("user_id", userId);
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
 
       if (error) {
         throw new Error(error.message);
@@ -29,7 +30,7 @@ export const saveRecipesToDB = createAsyncThunk(
     try {
       const recipeInserts = recipes.map((recipe) => ({
         user_id: userId,
-        recipe_info: recipe,
+        recipe_info: recipe.recipe_info,
       }));
 
       const { data, error } = await supabase
@@ -57,7 +58,7 @@ const recipesSlice = createSlice({
   initialState: defaultState,
   reducers: {
     addRecipesToStore(state, action) {
-      state.recipes = [...state.recipes, ...action.payload];
+      state.recipes = [...action.payload, ...state.recipes];
     },
   },
   extraReducers: (builder) => {
