@@ -1,7 +1,9 @@
 // components/RecipeMain.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { getRecipeFromAI } from "../../services/openaiApi";
+import { saveRecipesToDB, addRecipesToStore } from "../../store/recipe-slice";
 import IngredientInput from "./IngredientInput";
 import Title from "../../components/General/Title";
 import OptionalInputs from "../../components/AI/OptionalInputs";
@@ -17,6 +19,8 @@ const RecipeMain = () => {
   const [showIngredients, setShowIngredients] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const userId = useSelector((state) => state.users.userId);
 
   const title = "Rezepte";
   const options = [
@@ -62,6 +66,8 @@ const RecipeMain = () => {
         file,
         ingredients
       );
+      await dispatch(saveRecipesToDB({ userId, recipes }));
+      dispatch(addRecipesToStore(recipes));
       navigate("/recipe_overview", { state: { recipes } });
     } catch (error) {
       console.error("Fehler beim Abrufen des Rezepts:", error);

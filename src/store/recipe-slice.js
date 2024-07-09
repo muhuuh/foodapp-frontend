@@ -21,21 +21,24 @@ export const fetchRecipes = createAsyncThunk(
   }
 );
 
-// Async thunk to update user profile in the database
-export const updateRecipesInDB = createAsyncThunk(
-  "recipes/updateRecipesInDB",
-  async (recipesData, { rejectWithValue }) => {
+// Async thunk to save recipes to the database
+export const saveRecipesToDB = createAsyncThunk(
+  "recipes/saveRecipesToDB",
+  async ({ userId, recipes }, { rejectWithValue }) => {
     try {
-      const { id, ...updateData } = recipesData;
+      const recipeInserts = recipes.map((recipe) => ({
+        user_id: userId,
+        recipe_info: recipe,
+      }));
+
       const { data, error } = await supabase
-        .from("user_profiles")
-        .update(updateData)
-        .eq("id", id);
+        .from("recipes")
+        .insert(recipeInserts);
 
       if (error) {
         throw new Error(error.message);
       }
-      return data[0]; // Return the updated profile
+      return data;
     } catch (err) {
       return rejectWithValue(err.message);
     }
@@ -43,17 +46,17 @@ export const updateRecipesInDB = createAsyncThunk(
 );
 
 const defaultState = {
-  recipes: {},
+  recipes: [],
   loading: false,
   error: null,
 };
 
 const recipesSlice = createSlice({
-  name: "user",
+  name: "recipes",
   initialState: defaultState,
   reducers: {
-    updateRecipesLocal(state, action) {
-      state.recipes = { ...state.recipes, ...action.payload };
+    addRecipesToStore(state, action) {
+      state.recipes.push(...action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -64,14 +67,26 @@ const recipesSlice = createSlice({
       })
       .addCase(fetchRecipes.fulfilled, (state, action) => {
         state.loading = false;
-        state.userProfile = action.payload;
+        state.recipes = action.payload;
       })
       .addCase(fetchRecipes.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(saveRecipesToDB.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(saveRecipesToDB.fulfilled, (state, action) => {
+        state.loading = false;
+        state.recipes.push(...action.payload);
+      })
+      .addCase(saveRecipesToDB.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
   },
 });
 
-export const { updateUserProfileLocal, setUserId } = recipesSlice.actions;
+export const { addRecipesToStore } = recipesSlice.actions;
 export default recipesSlice.reducer;
