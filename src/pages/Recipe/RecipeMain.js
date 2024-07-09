@@ -1,12 +1,12 @@
 // components/RecipeMain.js
 import React, { useState } from "react";
-
+import AIInputForm from "./AIInputForm";
 import { getRecipeFromAI } from "../../services/openaiApi";
-import AIInputForm from "../../components/AI/AIInputForm";
 
 const RecipeMain = () => {
   const [recipe, setRecipe] = useState(null);
 
+  const title = "Rezepte";
   const options = [
     {
       name: "diet",
@@ -21,11 +21,16 @@ const RecipeMain = () => {
 
   const instructions = "Erklären Sie, was Sie essen möchten";
 
-  const handleAIInputSubmit = async (userInput, additionalOptions, file) => {
+  const handleAIInputSubmit = async (
+    userInput,
+    additionalOptions,
+    file,
+    ingredients
+  ) => {
     try {
       const optionsArray = Object.values(additionalOptions);
       const result = await getRecipeFromAI(userInput, optionsArray);
-      // Handle file upload here if necessary
+      // Handle file upload and ingredients here if necessary
       setRecipe(result);
     } catch (error) {
       console.error("Fehler beim Abrufen des Rezepts:", error);
@@ -36,6 +41,7 @@ const RecipeMain = () => {
     <div className="p-4">
       <AIInputForm
         onSubmit={handleAIInputSubmit}
+        title={title}
         options={options}
         instructions={instructions}
       />
