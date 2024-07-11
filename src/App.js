@@ -13,6 +13,10 @@ import Settings from "./pages/Login/Settings";
 import RecipeMain from "./pages/Recipe/RecipeMain";
 import RecipeOverview from "./pages/Recipe/RecipeOverview";
 import RecipeDetail from "./pages/Recipe/RecipeDetail";
+import LocalStoreMain from "./pages/Store/LocalStoreMain";
+import Landingpage from "./pages/Landingpage";
+import FavoritesMain from "./pages/Favorites/FavoritesMain";
+import Footer from "./components/General/Footer";
 
 function App() {
   const dispatch = useDispatch();
@@ -54,19 +58,24 @@ function App() {
   }, [dispatch, userId]);
 
   return (
-    <Routes>
-      <Route path="/" element={<Signin />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/signin" element={<Signin />} />
-      <Route path="/reset_password" element={<ResetPassword />} />
-      <Route element={<PrivateRoute />}>
-        <Route path="/main_view" element={<Settings />} />
-        <Route path="/recipe" element={<RecipeMain />} />
-        <Route path="/recipe_overview" element={<RecipeOverview />} />
-        <Route path="/recipe/:id" element={<RecipeDetail />} />
-        <Route path="/settings" element={<Settings />} />
-      </Route>
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<Signin />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signin" element={<Signin />} />
+        <Route path="/reset_password" element={<ResetPassword />} />
+        <Route path="/landingpage" element={<Landingpage />} />
+        <Route element={<PrivateRoute />}>
+          <Route path="/main_view" element={<LocalStoreMain />} />
+          <Route path="/favorites" element={<FavoritesMain />} />
+          <Route path="/recipe" element={<RecipeMain />} />
+          <Route path="/recipe_overview" element={<RecipeOverview />} />
+          <Route path="/recipe/:id" element={<RecipeDetail />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
+      </Routes>
+      <Footer />
+    </>
   );
 }
 
