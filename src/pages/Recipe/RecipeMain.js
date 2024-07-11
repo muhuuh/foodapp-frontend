@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getRecipeFromAI } from "../../services/openaiApi";
 import { saveRecipesToDB, addRecipesToStore } from "../../store/recipe-slice";
-import IngredientInput from "./IngredientInput";
+import IngredientInput from "../../components/Recipes/IngredientInput";
 import Title from "../../components/General/Title";
 import OptionalInputs from "../../components/AI/OptionalInputs";
 import FileUpload from "../../components/AI/FileUpload";
