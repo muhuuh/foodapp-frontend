@@ -11,11 +11,13 @@ const RecipeBox = ({ recipe }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleDelete = () => {
+  const handleDelete = (e) => {
+    e.stopPropagation(); // Prevent navigation
     dispatch(deleteRecipeFromDB(recipe.id));
   };
 
-  const handleFavoriteToggle = () => {
+  const handleFavoriteToggle = (e) => {
+    e.stopPropagation(); // Prevent navigation
     dispatch(
       toggleFavoriteRecipeInDB({
         recipeId: recipe.id,
@@ -43,7 +45,10 @@ const RecipeBox = ({ recipe }) => {
           className="mb-2"
         />
       )}
-      <div className="flex justify-between">
+      <div
+        className="flex justify-between"
+        onClick={(e) => e.stopPropagation()}
+      >
         <button onClick={handleFavoriteToggle}>
           {recipe.favorited ? "★" : "☆"}
         </button>

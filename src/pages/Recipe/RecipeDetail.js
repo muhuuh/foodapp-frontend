@@ -1,9 +1,11 @@
+// components/RecipeDetail.js
 import React from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const RecipeDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const recipe = useSelector((state) =>
     state.recipes.recipes.find((recipe) => recipe.id === id)
   );
@@ -13,7 +15,13 @@ const RecipeDetail = () => {
   }
 
   return (
-    <div className="p-4 max-w-md mx-auto">
+    <div className="p-4 max-w-md mx-auto relative">
+      <button
+        onClick={() => navigate("/recipe_overview")}
+        className="absolute top-4 right-4 p-2 bg-gray-200 rounded-full"
+      >
+        ← Zurück
+      </button>
       <h1 className="text-2xl font-bold mb-4">
         {recipe.recipe_info.recipe_title}
       </h1>
