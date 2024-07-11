@@ -6,6 +6,8 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 });
 
+//----------------------- create recipes --------------
+
 export const getRecipeFromAI = async (
   userInput,
   additionalOptions,
@@ -69,6 +71,79 @@ const parseResult = (result) => {
       ingredients: recipe.ingredients || "Keine Zutaten angegeben",
       instructions: recipe.instructions || "Keine Anweisungen angegeben",
     }));
+  } catch (error) {
+    console.error("Error parsing JSON result from OpenAI:", error);
+    return [
+      {
+        recipe_title: "Fehler",
+        ingredients: "Zutaten konnten nicht analysiert werden.",
+        instructions: "Anweisungen konnten nicht analysiert werden.",
+      },
+    ];
+  }
+};
+
+// ----------- modify recipes --------------------
+
+export const modifyRecipeWithAI = async ({ recipe, modificationText }) => {
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4-turbo",
+      messages: [
+        {
+          role: "system",
+          content: "You are a helpful assistant.",
+        },
+        {
+          role: "user",
+          content: generateModificationPrompt(recipe, modificationText),
+        },
+      ],
+      max_tokens: 3000,
+      temperature: 0.7,
+    });
+
+    const result = response.choices[0].message.content.trim();
+    const modifiedRecipe = parseModifyResult(result)[0];
+
+    return modifiedRecipe;
+  } catch (error) {
+    console.error("Error modifying recipe with OpenAI:", error);
+    throw error;
+  }
+};
+
+const generateModificationPrompt = (recipe, modificationText) => {
+  return `Der Benutzer möchte das folgende Rezept ändern: 
+  Titel: ${recipe.recipe_info.recipe_title}
+  Zutaten: ${recipe.recipe_info.ingredients}
+  Anweisungen: ${recipe.recipe_info.instructions}
+
+  Änderungsanweisungen: ${modificationText}
+
+  Bitte geben Sie das aktualisierte Rezept im strengen JSON-Format mit der folgenden Struktur zurück: 
+  {
+    "recipe_title": "Titel des Rezepts", 
+    "ingredients": "Liste der Zutaten", 
+    "instructions": "Schritt-für-Schritt-Anweisungen"
+  }. Geben Sie nur die JSON-Antwort zurück, ohne zusätzlichen Text.`;
+};
+
+const parseModifyResult = (result) => {
+  try {
+    const jsonString = result.match(/\{.*\}/s)?.[0]; // Extract the JSON part of the string
+    if (!jsonString) {
+      throw new Error("No JSON found in the response");
+    }
+    const parsedResult = JSON.parse(jsonString);
+    return [
+      {
+        recipe_title: parsedResult.recipe_title || "Kein Titel angegeben",
+        ingredients: parsedResult.ingredients || "Keine Zutaten angegeben",
+        instructions:
+          parsedResult.instructions || "Keine Anweisungen angegeben",
+      },
+    ];
   } catch (error) {
     console.error("Error parsing JSON result from OpenAI:", error);
     return [

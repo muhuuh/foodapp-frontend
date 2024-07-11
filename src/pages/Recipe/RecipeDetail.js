@@ -1,14 +1,34 @@
-// components/RecipeDetail.js
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
+import { toggleShoppingList, updateRecipeInDB } from "../../store/recipe-slice";
+import { modifyRecipeWithAI } from "../../services/openaiApi";
 
 const RecipeDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const userId = useSelector((state) => state.users.userId);
   const recipe = useSelector((state) =>
     state.recipes.recipes.find((recipe) => recipe.id === id)
   );
+  const shoppingLists = useSelector((state) => state.recipes.shoppingLists);
+
+  const [isInShoppingList, setIsInShoppingList] = useState(false);
+  const [showModificationInput, setShowModificationInput] = useState(false);
+  const [modificationText, setModificationText] = useState("");
+
+  useEffect(() => {
+    if (recipe) {
+      const ingredients = recipe.recipe_info.ingredients.split(", ");
+      const existingList = shoppingLists.find(
+        (list) =>
+          list.user_id === userId &&
+          JSON.stringify(list.ingredients) === JSON.stringify(ingredients)
+      );
+      setIsInShoppingList(!!existingList);
+    }
+  }, [recipe, shoppingLists, userId]);
 
   if (!recipe) {
     return <p>Rezept nicht gefunden.</p>;
@@ -19,6 +39,32 @@ const RecipeDetail = () => {
     .split(/(?<=\.)\s/)
     .map((instruction) => instruction.replace(/^\d+\.\s*/, ""))
     .filter((instruction) => instruction.trim() !== ""); // Filter out empty instructions
+
+  const handleToggleShoppingList = () => {
+    dispatch(toggleShoppingList({ userId, ingredients }));
+    setIsInShoppingList((prev) => !prev);
+  };
+
+  const handleModificationSubmit = async () => {
+    if (!modificationText.trim()) return;
+
+    try {
+      const modifiedRecipe = await modifyRecipeWithAI({
+        recipe,
+        modificationText,
+      });
+
+      // Dispatch the action to update the recipe in the Redux store and Supabase
+      dispatch(
+        updateRecipeInDB({ id: recipe.id, recipe_info: modifiedRecipe })
+      );
+    } catch (error) {
+      console.error("Error modifying the recipe:", error);
+    } finally {
+      setShowModificationInput(false);
+      setModificationText("");
+    }
+  };
 
   return (
     <div className="p-4 max-w-md mx-auto relative">
@@ -38,13 +84,47 @@ const RecipeDetail = () => {
           className="mb-4"
         />
       )}
-      <h2 className="text-lg font-bold mb-2">Zutaten</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-bold mb-2">Zutaten</h2>
+        <button
+          onClick={handleToggleShoppingList}
+          className={`p-2 rounded-full ${
+            isInShoppingList ? "bg-green-500 text-white" : "bg-gray-200"
+          }`}
+        >
+          {isInShoppingList ? "In Einkaufsliste" : "Zur Einkaufsliste"}
+        </button>
+      </div>
       <ul className="list-disc ml-6 mb-4">
         {ingredients.map((ingredient, index) => (
           <li key={index}>{ingredient}</li>
         ))}
       </ul>
-      <h2 className="text-lg font-bold mb-2">Anweisungen</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-bold mb-2">Anweisungen</h2>
+        <button
+          onClick={() => setShowModificationInput(!showModificationInput)}
+          className="p-2 bg-blue-500 text-white rounded-full"
+        >
+          Rezept ändern
+        </button>
+      </div>
+      {showModificationInput && (
+        <div className="mt-4">
+          <textarea
+            className="w-full p-2 border rounded mb-2"
+            value={modificationText}
+            onChange={(e) => setModificationText(e.target.value)}
+            placeholder="Beschreiben Sie, wie das Rezept geändert werden soll..."
+          />
+          <button
+            onClick={handleModificationSubmit}
+            className="p-2 bg-green-500 text-white rounded"
+          >
+            Änderungen speichern
+          </button>
+        </div>
+      )}
       <ol className="list-decimal ml-6 mb-4">
         {instructions.map((instruction, index) => (
           <li key={index}>{instruction}</li>
