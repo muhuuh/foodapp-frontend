@@ -2,17 +2,17 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import supabase from "./services/supabase/supabase";
+import { Routes, Route } from "react-router-dom";
+import PrivateRoute from "./services/supabase/PrivateRoute";
+import { fetchUserProfile, setUserId } from "./store/user-slice";
+import { fetchRecipes } from "./store/recipe-slice";
 import Signin from "./pages/Login/Signin";
 import SignUp from "./pages/Login/Signup";
 import ResetPassword from "./components/Login/ResetPassword";
-import { Routes, Route } from "react-router-dom";
-import PrivateRoute from "./services/supabase/PrivateRoute";
-
-import { fetchUserProfile, setUserId } from "./store/user-slice";
-import { fetchRecipes } from "./store/recipe-slice";
 import Settings from "./pages/Login/Settings";
 import RecipeMain from "./pages/Recipe/RecipeMain";
 import RecipeOverview from "./pages/Recipe/RecipeOverview";
+import RecipeDetail from "./pages/Recipe/RecipeDetail";
 
 function App() {
   const dispatch = useDispatch();
@@ -63,6 +63,7 @@ function App() {
         <Route path="/main_view" element={<Settings />} />
         <Route path="/recipe" element={<RecipeMain />} />
         <Route path="/recipe_overview" element={<RecipeOverview />} />
+        <Route path="/recipe/:id" element={<RecipeDetail />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
     </Routes>

@@ -31,6 +31,7 @@ export const saveRecipesToDB = createAsyncThunk(
       const recipeInserts = recipes.map((recipe) => ({
         user_id: userId,
         recipe_info: recipe.recipe_info,
+        created_at: new Date().toISOString(),
       }));
 
       const { data, error } = await supabase
@@ -41,6 +42,46 @@ export const saveRecipesToDB = createAsyncThunk(
         throw new Error(error.message);
       }
       return data; // return inserted data
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+// Async thunk to delete a recipe from the database
+export const deleteRecipeFromDB = createAsyncThunk(
+  "recipes/deleteRecipeFromDB",
+  async (recipeId, { rejectWithValue }) => {
+    try {
+      const { error } = await supabase
+        .from("recipes")
+        .delete()
+        .eq("id", recipeId);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+      return recipeId;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+// Async thunk to toggle the favorite status of a recipe
+export const toggleFavoriteRecipeInDB = createAsyncThunk(
+  "recipes/toggleFavoriteRecipeInDB",
+  async ({ recipeId, favorited }, { rejectWithValue }) => {
+    try {
+      const { data, error } = await supabase
+        .from("recipes")
+        .update({ favorited })
+        .eq("id", recipeId);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+      return { recipeId, favorited };
     } catch (err) {
       return rejectWithValue(err.message);
     }
@@ -59,6 +100,18 @@ const recipesSlice = createSlice({
   reducers: {
     addRecipesToStore(state, action) {
       state.recipes = [...action.payload, ...state.recipes];
+    },
+    removeRecipeFromStore(state, action) {
+      state.recipes = state.recipes.filter(
+        (recipe) => recipe.id !== action.payload
+      );
+    },
+    updateRecipeInStore(state, action) {
+      const { recipeId, favorited } = action.payload;
+      const recipe = state.recipes.find((recipe) => recipe.id === recipeId);
+      if (recipe) {
+        recipe.favorited = favorited;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -89,9 +142,22 @@ const recipesSlice = createSlice({
       .addCase(saveRecipesToDB.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(deleteRecipeFromDB.fulfilled, (state, action) => {
+        state.recipes = state.recipes.filter(
+          (recipe) => recipe.id !== action.payload
+        );
+      })
+      .addCase(toggleFavoriteRecipeInDB.fulfilled, (state, action) => {
+        const { recipeId, favorited } = action.payload;
+        const recipe = state.recipes.find((recipe) => recipe.id === recipeId);
+        if (recipe) {
+          recipe.favorited = favorited;
+        }
       });
   },
 });
 
-export const { addRecipesToStore } = recipesSlice.actions;
+export const { addRecipesToStore, removeRecipeFromStore, updateRecipeInStore } =
+  recipesSlice.actions;
 export default recipesSlice.reducer;
