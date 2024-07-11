@@ -14,6 +14,12 @@ const RecipeDetail = () => {
     return <p>Rezept nicht gefunden.</p>;
   }
 
+  const ingredients = recipe.recipe_info.ingredients.split(", ");
+  const instructions = recipe.recipe_info.instructions
+    .split(/(?<=\.)\s/)
+    .map((instruction) => instruction.replace(/^\d+\.\s*/, ""))
+    .filter((instruction) => instruction.trim() !== ""); // Filter out empty instructions
+
   return (
     <div className="p-4 max-w-md mx-auto relative">
       <button
@@ -33,9 +39,17 @@ const RecipeDetail = () => {
         />
       )}
       <h2 className="text-lg font-bold mb-2">Zutaten</h2>
-      <p>{recipe.recipe_info.ingredients}</p>
+      <ul className="list-disc ml-6 mb-4">
+        {ingredients.map((ingredient, index) => (
+          <li key={index}>{ingredient}</li>
+        ))}
+      </ul>
       <h2 className="text-lg font-bold mb-2">Anweisungen</h2>
-      <p>{recipe.recipe_info.instructions}</p>
+      <ol className="list-decimal ml-6 mb-4">
+        {instructions.map((instruction, index) => (
+          <li key={index}>{instruction}</li>
+        ))}
+      </ol>
     </div>
   );
 };

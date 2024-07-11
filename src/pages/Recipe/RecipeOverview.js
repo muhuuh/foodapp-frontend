@@ -2,9 +2,11 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import RecipeBox from "../../components/Recipes/RecipeBox";
+import Title from "../../components/General/Title";
 
 const RecipeOverview = () => {
   const { recipes, loading } = useSelector((state) => state.recipes);
+  const title = "Rezepte Übersicht";
 
   // Filter out any invalid recipes
   const validRecipes = recipes.filter(
@@ -18,7 +20,8 @@ const RecipeOverview = () => {
 
   return (
     <div className="p-4 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Rezepte Übersicht</h1>
+      <Title text={title} />
+      <h1 className="text-2xl font-bold mb-4"></h1>
       {loading && <p>Loading...</p>}
       {!loading && validRecipes.length > 0 ? (
         validRecipes.map((recipe) => (
