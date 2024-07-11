@@ -1,5 +1,5 @@
 // components/Footer.js
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MediaQuery from "react-responsive";
 
@@ -14,14 +14,33 @@ const Footer = () => {
   const [showTractorDropdown, setShowTractorDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
 
+  const tractorRef = useRef(null);
+  const userRef = useRef(null);
+
   const handleIconClick = (path) => {
     navigate(path);
   };
 
+  const handleClickOutside = (event) => {
+    if (tractorRef.current && !tractorRef.current.contains(event.target)) {
+      setShowTractorDropdown(false);
+    }
+    if (userRef.current && !userRef.current.contains(event.target)) {
+      setShowUserDropdown(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <MediaQuery maxWidth={768}>
       <div className="fixed bottom-0 w-full bg-gray-800 text-white flex justify-around items-center p-4">
-        <div className="relative">
+        <div className="relative" ref={tractorRef}>
           <button onClick={() => setShowTractorDropdown(!showTractorDropdown)}>
             <TractorIcon />
           </button>
@@ -45,7 +64,7 @@ const Footer = () => {
         <button onClick={() => handleIconClick("/favorites")}>
           <HeartIcon />
         </button>
-        <div className="relative">
+        <div className="relative" ref={userRef}>
           <button onClick={() => setShowUserDropdown(!showUserDropdown)}>
             <UserNoFillIcon />
           </button>
