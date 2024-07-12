@@ -30,18 +30,19 @@ export const saveRecipesToDB = createAsyncThunk(
     try {
       const recipeInserts = recipes.map((recipe) => ({
         user_id: userId,
-        recipe_info: recipe.recipe_info,
+        recipe_info: recipe,
         created_at: new Date().toISOString(),
       }));
 
       const { data, error } = await supabase
         .from("recipes")
-        .insert(recipeInserts);
+        .insert(recipeInserts)
+        .select(); // Select the inserted data including IDs
 
       if (error) {
         throw new Error(error.message);
       }
-      return data; // return inserted data
+      return data; // return inserted data with IDs
     } catch (err) {
       return rejectWithValue(err.message);
     }

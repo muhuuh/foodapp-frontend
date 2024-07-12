@@ -67,15 +67,11 @@ const RecipeMain = () => {
         ingredients
       );
 
-      // Transform AI output to match the structure in Supabase
-      const formattedRecipes = recipes.map((recipe) => ({
-        user_id: userId,
-        recipe_info: recipe,
-        created_at: new Date().toISOString(), // Add timestamp for sorting
-      }));
+      const savedRecipes = await dispatch(
+        saveRecipesToDB({ userId, recipes })
+      ).unwrap();
 
-      await dispatch(saveRecipesToDB({ userId, recipes: formattedRecipes }));
-      dispatch(addRecipesToStore(formattedRecipes));
+      dispatch(addRecipesToStore(savedRecipes));
       navigate("/recipe_overview");
     } catch (error) {
       console.error("Fehler beim Abrufen des Rezepts:", error);
