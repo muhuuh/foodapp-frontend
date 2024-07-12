@@ -1,5 +1,7 @@
 // services/openaiApi.js
 import { OpenAI } from "openai";
+import axios from "axios";
+import supabase from "./supabase/supabase";
 
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
@@ -158,8 +160,6 @@ const parseModifyResult = (result) => {
 
 //-------------------------- generate images ------------------
 export const generateImageForRecipe = async (recipeTitle) => {
-  console.log("generateImageForRecipe");
-  console.log(generateImageForRecipe);
   try {
     const response = await openai.images.generate({
       prompt: `A modern, appetizing, and professional-looking dish of ${recipeTitle}`,
@@ -167,16 +167,33 @@ export const generateImageForRecipe = async (recipeTitle) => {
       size: "512x512",
     });
 
-    console.log("response");
-    console.log(response);
-
     const imageUrl = response.data[0].url;
-
-    console.log("imageUrl");
-    console.log(imageUrl);
     return imageUrl;
   } catch (error) {
     console.error("Error generating image from OpenAI:", error);
+    throw error;
+  }
+};
+
+export const uploadImageToSupabase = async (imageUrl, imageName) => {
+  try {
+    const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
+    const file = new File([response.data], imageName, { type: "image/png" });
+
+    const { data, error } = await supabase.storage
+      .from("recipe-images")
+      .upload(imageName, file);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    const publicUrl = supabase.storage
+      .from("recipe-images")
+      .getPublicUrl(imageName).publicUrl;
+    return publicUrl;
+  } catch (error) {
+    console.error("Error uploading image to Supabase:", error);
     throw error;
   }
 };

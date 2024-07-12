@@ -1,7 +1,10 @@
 // store/recipesSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import supabase from "../services/supabase/supabase";
-import { generateImageForRecipe } from "../services/openaiApi";
+import {
+  generateImageForRecipe,
+  uploadImageToSupabase,
+} from "../services/openaiApi";
 
 // Async thunk to fetch recipes from the database
 export const fetchRecipes = createAsyncThunk(
@@ -155,8 +158,6 @@ export const updateRecipesWithImages = createAsyncThunk(
     const { recipes } = getState().recipes;
 
     const recipesToUpdate = recipes.filter((recipe) => !recipe.image_link);
-    console.log("recipesToUpdate");
-    console.log(recipesToUpdate);
 
     try {
       const updatedRecipes = await Promise.all(
@@ -164,20 +165,23 @@ export const updateRecipesWithImages = createAsyncThunk(
           const imageUrl = await generateImageForRecipe(
             recipe.recipe_info.recipe_title
           );
-          console.log("imageUrl");
-          console.log(imageUrl);
+
+          const publicUrl = await uploadImageToSupabase(
+            imageUrl,
+            `${recipe.id}.png`
+          );
 
           // Update the recipe in supabase
           const { data, error } = await supabase
             .from("recipes")
-            .update({ image_link: imageUrl })
+            .update({ image_link: publicUrl })
             .eq("id", recipe.id);
 
           if (error) {
             throw new Error(error.message);
           }
 
-          return { ...recipe, image_link: imageUrl };
+          return { ...recipe, image_link: publicUrl };
         })
       );
 
@@ -187,7 +191,6 @@ export const updateRecipesWithImages = createAsyncThunk(
     }
   }
 );
-
 const defaultState = {
   recipes: [],
   shoppingLists: [],
@@ -272,6 +275,18 @@ const recipesSlice = createSlice({
         if (recipe) {
           recipe.recipe_info = recipe_info;
         }
+      })
+
+      .addCase(updateRecipesWithImages.fulfilled, (state, action) => {
+        const updatedRecipes = action.payload;
+        updatedRecipes.forEach((updatedRecipe) => {
+          const recipe = state.recipes.find(
+            (recipe) => recipe.id === updatedRecipe.id
+          );
+          if (recipe) {
+            recipe.image_link = updatedRecipe.image_link;
+          }
+        });
       });
   },
 });

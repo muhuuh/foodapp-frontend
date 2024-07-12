@@ -6,6 +6,7 @@ import {
   deleteRecipeFromDB,
   toggleFavoriteRecipeInDB,
 } from "../../store/recipe-slice";
+import LoadingSpinner from "../General/LoadingSpinner";
 
 const RecipeBox = ({ recipe }) => {
   const dispatch = useDispatch();
@@ -38,12 +39,19 @@ const RecipeBox = ({ recipe }) => {
       <h2 className="text-xl font-bold mb-2">
         {recipe.recipe_info.recipe_title}
       </h2>
-      {recipe.image_link && (
+      {recipe.image_link ? (
         <img
           src={recipe.image_link}
           alt={recipe.recipe_info.recipe_title}
           className="mb-2"
         />
+      ) : (
+        <div className="flex flex-col items-center justify-center bg-gray-200 h-48">
+          <LoadingSpinner />
+          <span className="text-gray-600 mt-2">
+            Bilder werden kreiert, ein Moment ...
+          </span>
+        </div>
       )}
       <div
         className="flex justify-between"
