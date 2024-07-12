@@ -3,7 +3,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getRecipeFromAI } from "../../services/openaiApi";
-import { saveRecipesToDB, addRecipesToStore } from "../../store/recipe-slice";
+import {
+  saveRecipesToDB,
+  addRecipesToStore,
+  updateRecipesWithImages,
+} from "../../store/recipe-slice";
 import IngredientInput from "../../components/Recipes/IngredientInput";
 import Title from "../../components/General/Title";
 import OptionalInputs from "../../components/AI/OptionalInputs";
@@ -73,6 +77,9 @@ const RecipeMain = () => {
 
       dispatch(addRecipesToStore(savedRecipes));
       navigate("/recipe_overview");
+
+      // Update the recipes with images
+      dispatch(updateRecipesWithImages());
     } catch (error) {
       console.error("Fehler beim Abrufen des Rezepts:", error);
     } finally {

@@ -155,3 +155,28 @@ const parseModifyResult = (result) => {
     ];
   }
 };
+
+//-------------------------- generate images ------------------
+export const generateImageForRecipe = async (recipeTitle) => {
+  console.log("generateImageForRecipe");
+  console.log(generateImageForRecipe);
+  try {
+    const response = await openai.images.generate({
+      prompt: `A modern, appetizing, and professional-looking dish of ${recipeTitle}`,
+      n: 1,
+      size: "512x512",
+    });
+
+    console.log("response");
+    console.log(response);
+
+    const imageUrl = response.data[0].url;
+
+    console.log("imageUrl");
+    console.log(imageUrl);
+    return imageUrl;
+  } catch (error) {
+    console.error("Error generating image from OpenAI:", error);
+    throw error;
+  }
+};

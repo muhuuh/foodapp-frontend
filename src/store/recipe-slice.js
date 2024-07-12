@@ -1,6 +1,7 @@
 // store/recipesSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import supabase from "../services/supabase/supabase";
+import { generateImageForRecipe } from "../services/openaiApi";
 
 // Async thunk to fetch recipes from the database
 export const fetchRecipes = createAsyncThunk(
@@ -144,6 +145,45 @@ export const updateRecipeInDB = createAsyncThunk(
       return { id, recipe_info };
     } catch (err) {
       return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const updateRecipesWithImages = createAsyncThunk(
+  "recipes/updateRecipesWithImages",
+  async (_, { getState, rejectWithValue }) => {
+    const { recipes } = getState().recipes;
+
+    const recipesToUpdate = recipes.filter((recipe) => !recipe.image_link);
+    console.log("recipesToUpdate");
+    console.log(recipesToUpdate);
+
+    try {
+      const updatedRecipes = await Promise.all(
+        recipesToUpdate.map(async (recipe) => {
+          const imageUrl = await generateImageForRecipe(
+            recipe.recipe_info.recipe_title
+          );
+          console.log("imageUrl");
+          console.log(imageUrl);
+
+          // Update the recipe in supabase
+          const { data, error } = await supabase
+            .from("recipes")
+            .update({ image_link: imageUrl })
+            .eq("id", recipe.id);
+
+          if (error) {
+            throw new Error(error.message);
+          }
+
+          return { ...recipe, image_link: imageUrl };
+        })
+      );
+
+      return updatedRecipes;
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
   }
 );
