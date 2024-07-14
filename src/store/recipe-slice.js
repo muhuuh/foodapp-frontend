@@ -130,6 +130,24 @@ export const toggleShoppingList = createAsyncThunk(
   }
 );
 
+export const addShoppingList = createAsyncThunk(
+  "recipes/addShoppingList",
+  async ({ userId, listName, ingredients }, { rejectWithValue }) => {
+    try {
+      const { data, error } = await supabase
+        .from("shopping_list")
+        .insert({ user_id: userId, list_name: listName, ingredients });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+      return data[0];
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 // store/recipesSlice.js
 export const updateRecipeInDB = createAsyncThunk(
   "recipes/updateRecipeInDB",
@@ -291,6 +309,9 @@ const recipesSlice = createSlice({
             (list) => list.id !== id
           );
         }
+      })
+      .addCase(addShoppingList.fulfilled, (state, action) => {
+        state.shoppingLists.push(action.payload);
       })
       .addCase(updateRecipeInDB.fulfilled, (state, action) => {
         const { id, recipe_info } = action.payload;

@@ -2,9 +2,10 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
-import { toggleShoppingList } from "../../store/recipe-slice";
+import { addShoppingList } from "../../store/recipe-slice";
 import RecipeModification from "../../components/Recipes/RecipeModification";
 import LoadingSpinner from "../../components/General/LoadingSpinner";
+import ShoppingListModal from "../../components/Shoppinglist/ShoppingListModal";
 
 const RecipeDetail = () => {
   const { id } = useParams();
@@ -14,22 +15,7 @@ const RecipeDetail = () => {
   const recipe = useSelector((state) =>
     state.recipes.recipes.find((recipe) => recipe.id === id)
   );
-  const shoppingLists = useSelector((state) => state.recipes.shoppingLists);
-
-  const [isInShoppingList, setIsInShoppingList] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    if (recipe) {
-      const ingredients = recipe.recipe_info.ingredients.split(", ");
-      const existingList = shoppingLists.find(
-        (list) =>
-          list.user_id === userId &&
-          JSON.stringify(list.ingredients) === JSON.stringify(ingredients)
-      );
-      setIsInShoppingList(!!existingList);
-    }
-  }, [recipe, shoppingLists, userId]);
+  const [isShoppingListModalOpen, setIsShoppingListModalOpen] = useState(false);
 
   if (!recipe) {
     return <p>Rezept nicht gefunden.</p>;
@@ -41,9 +27,15 @@ const RecipeDetail = () => {
     .map((instruction) => instruction.replace(/^\d+\.\s*/, ""))
     .filter((instruction) => instruction.trim() !== ""); // Filter out empty instructions
 
-  const handleToggleShoppingList = () => {
-    dispatch(toggleShoppingList({ userId, ingredients }));
-    setIsInShoppingList((prev) => !prev);
+  const handleOpenShoppingListModal = () => {
+    setIsShoppingListModalOpen(true);
+  };
+
+  const handleSaveShoppingList = (listName, selectedIngredients) => {
+    dispatch(
+      addShoppingList({ userId, listName, ingredients: selectedIngredients })
+    );
+    setIsShoppingListModalOpen(false);
   };
 
   return (
@@ -67,12 +59,10 @@ const RecipeDetail = () => {
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold mb-2">Zutaten</h2>
         <button
-          onClick={handleToggleShoppingList}
-          className={`p-2 rounded-full ${
-            isInShoppingList ? "bg-green-500 text-white" : "bg-gray-200"
-          }`}
+          onClick={handleOpenShoppingListModal}
+          className="p-2 rounded-full bg-gray-200"
         >
-          {isInShoppingList ? "In Einkaufsliste" : "Zur Einkaufsliste"}
+          Zur Einkaufsliste
         </button>
       </div>
       <ul className="list-disc ml-6 mb-4">
@@ -86,11 +76,13 @@ const RecipeDetail = () => {
           <li key={index}>{instruction}</li>
         ))}
       </ol>
-      {isLoading && (
-        <div className="flex justify-center mt-4">
-          <LoadingSpinner />
-        </div>
-      )}
+
+      <ShoppingListModal
+        isOpen={isShoppingListModalOpen}
+        onRequestClose={() => setIsShoppingListModalOpen(false)}
+        ingredients={ingredients}
+        onSave={handleSaveShoppingList}
+      />
     </div>
   );
 };
