@@ -130,9 +130,13 @@ export const toggleShoppingList = createAsyncThunk(
   }
 );
 
+// store/recipesSlice.js
 export const updateRecipeInDB = createAsyncThunk(
   "recipes/updateRecipeInDB",
   async ({ id, recipe_info }, { rejectWithValue }) => {
+    console.log("recipe_info");
+    console.log(id);
+    console.log(recipe_info);
     try {
       const { data, error } = await supabase
         .from("recipes")
@@ -143,6 +147,28 @@ export const updateRecipeInDB = createAsyncThunk(
         throw new Error(error.message);
       }
       return { id, recipe_info };
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const updateRecipeCommentInDB = createAsyncThunk(
+  "recipes/updateRecipeCommentInDB",
+  async ({ id, user_comment }, { rejectWithValue }) => {
+    console.log("recipe_info");
+    console.log(id);
+    console.log(user_comment);
+    try {
+      const { data, error } = await supabase
+        .from("recipes")
+        .update({ user_comment })
+        .eq("id", id);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+      return { id, user_comment };
     } catch (err) {
       return rejectWithValue(err.message);
     }
@@ -271,6 +297,13 @@ const recipesSlice = createSlice({
         const recipe = state.recipes.find((recipe) => recipe.id === id);
         if (recipe) {
           recipe.recipe_info = recipe_info;
+        }
+      })
+      .addCase(updateRecipeCommentInDB.fulfilled, (state, action) => {
+        const { id, user_comment } = action.payload;
+        const recipe = state.recipes.find((recipe) => recipe.id === id);
+        if (recipe) {
+          recipe.user_comment = user_comment;
         }
       });
   },
