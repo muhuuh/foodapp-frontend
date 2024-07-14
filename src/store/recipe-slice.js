@@ -232,6 +232,45 @@ export const updateRecipesWithImages = createAsyncThunk(
   }
 );
 
+// Fetch shopping lists
+export const fetchShoppingLists = createAsyncThunk(
+  "recipes/fetchShoppingLists",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const { data, error } = await supabase
+        .from("shopping_list")
+        .select("*")
+        .eq("user_id", userId);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+// Save shopping list to the database
+export const saveShoppingListToDB = createAsyncThunk(
+  "recipes/saveShoppingListToDB",
+  async ({ userId, list_name, ingredients }, { rejectWithValue }) => {
+    try {
+      const { data, error } = await supabase
+        .from("shopping_list")
+        .insert([{ user_id: userId, list_name, ingredients }]);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+      return data[0]; // return the inserted shopping list
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 const defaultState = {
   recipes: [],
   shoppingLists: [],
@@ -326,6 +365,12 @@ const recipesSlice = createSlice({
         if (recipe) {
           recipe.user_comment = user_comment;
         }
+      })
+      .addCase(fetchShoppingLists.fulfilled, (state, action) => {
+        state.shoppingLists = action.payload;
+      })
+      .addCase(saveShoppingListToDB.fulfilled, (state, action) => {
+        state.shoppingLists.push(action.payload);
       });
   },
 });

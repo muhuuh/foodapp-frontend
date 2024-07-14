@@ -3,13 +3,20 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import Title from "../../components/General/Title";
 import RecipeBox from "../../components/Recipes/RecipeBox";
+import ShoppingListOverview from "./ShoppingListOverview";
 
 const FavoritesMain = () => {
   const [view, setView] = useState("Rezepte");
-  const { recipes, loading } = useSelector((state) => state.recipes);
+  const { recipes, shoppingLists, loading } = useSelector(
+    (state) => state.recipes
+  );
+
   const title = "Favoriten";
 
   const favoriteRecipes = recipes.filter((recipe) => recipe.favorited);
+
+  console.log("shoppingLists");
+  console.log(shoppingLists);
 
   return (
     <div className="p-4 max-w-sm mx-auto">
@@ -32,6 +39,7 @@ const FavoritesMain = () => {
           Shoppinglist
         </button>
       </div>
+
       {view === "Rezepte" && (
         <div>
           {loading && <p>Loading...</p>}
@@ -45,7 +53,7 @@ const FavoritesMain = () => {
         </div>
       )}
       {view === "Shoppinglist" && (
-        <p>Shoppinglisten-Ansicht (noch zu implementieren)</p>
+        <ShoppingListOverview shoppingLists={shoppingLists} />
       )}
     </div>
   );

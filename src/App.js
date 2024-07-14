@@ -5,7 +5,7 @@ import supabase from "./services/supabase/supabase";
 import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "./services/supabase/PrivateRoute";
 import { fetchUserProfile, setUserId } from "./store/user-slice";
-import { fetchRecipes } from "./store/recipe-slice";
+import { fetchRecipes, fetchShoppingLists } from "./store/recipe-slice";
 import Signin from "./pages/Login/Signin";
 import SignUp from "./pages/Login/Signup";
 import ResetPassword from "./components/Login/ResetPassword";
@@ -54,6 +54,7 @@ function App() {
   useEffect(() => {
     if (userId) {
       dispatch(fetchRecipes(userId));
+      dispatch(fetchShoppingLists(userId));
     }
   }, [dispatch, userId]);
 
