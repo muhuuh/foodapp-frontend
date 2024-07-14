@@ -90,46 +90,6 @@ export const toggleFavoriteRecipeInDB = createAsyncThunk(
   }
 );
 
-// Async thunk to toggle shopping list
-export const toggleShoppingList = createAsyncThunk(
-  "recipes/toggleShoppingList",
-  async ({ userId, ingredients }, { rejectWithValue, getState }) => {
-    try {
-      const { shoppingLists } = getState().recipes;
-      const existingList = shoppingLists.find(
-        (list) =>
-          list.user_id === userId &&
-          JSON.stringify(list.ingredients) === JSON.stringify(ingredients)
-      );
-
-      if (existingList) {
-        // Remove the existing shopping list
-        const { error } = await supabase
-          .from("shopping_list")
-          .delete()
-          .eq("id", existingList.id);
-
-        if (error) {
-          throw new Error(error.message);
-        }
-        return { action: "removed", id: existingList.id };
-      } else {
-        // Add new shopping list
-        const { data, error } = await supabase
-          .from("shopping_list")
-          .insert({ user_id: userId, ingredients });
-
-        if (error) {
-          throw new Error(error.message);
-        }
-        return { action: "added", list: data[0] };
-      }
-    } catch (err) {
-      return rejectWithValue(err.message);
-    }
-  }
-);
-
 export const addShoppingList = createAsyncThunk(
   "recipes/addShoppingList",
   async ({ userId, listName, ingredients }, { rejectWithValue }) => {
@@ -312,6 +272,26 @@ export const fetchShoppingListById = createAsyncThunk(
   }
 );
 
+// Delete a shopping list
+export const deleteShoppingListFromDB = createAsyncThunk(
+  "recipes/deleteShoppingListFromDB",
+  async (id, { rejectWithValue }) => {
+    try {
+      const { error } = await supabase
+        .from("shopping_list")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+      return id;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 const defaultState = {
   recipes: [],
   shoppingLists: [],
@@ -380,16 +360,7 @@ const recipesSlice = createSlice({
           recipe.favorited = favorited;
         }
       })
-      .addCase(toggleShoppingList.fulfilled, (state, action) => {
-        const { action: toggleAction, list, id } = action.payload;
-        if (toggleAction === "added") {
-          state.shoppingLists.push(list);
-        } else if (toggleAction === "removed") {
-          state.shoppingLists = state.shoppingLists.filter(
-            (list) => list.id !== id
-          );
-        }
-      })
+
       .addCase(addShoppingList.fulfilled, (state, action) => {
         state.shoppingLists.push(action.payload);
       })
@@ -415,6 +386,11 @@ const recipesSlice = createSlice({
       })
       .addCase(fetchShoppingListById.fulfilled, (state, action) => {
         state.shoppingLists.push(action.payload);
+      })
+      .addCase(deleteShoppingListFromDB.fulfilled, (state, action) => {
+        state.shoppingLists = state.shoppingLists.filter(
+          (list) => list.id !== action.payload
+        );
       });
   },
 });

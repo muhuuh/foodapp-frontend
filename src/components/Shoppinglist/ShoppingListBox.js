@@ -3,7 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import CommentModal from "../Recipes/CommentModal";
 import { useDispatch } from "react-redux";
-import { updateShoppingListCommentInDB } from "../../store/recipe-slice";
+import {
+  updateShoppingListCommentInDB,
+  deleteShoppingListFromDB,
+} from "../../store/recipe-slice";
 
 const ShoppingListBox = ({ shoppingList }) => {
   const navigate = useNavigate();
@@ -39,6 +42,11 @@ const ShoppingListBox = ({ shoppingList }) => {
     setShowCommentModal(false);
   };
 
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    dispatch(deleteShoppingListFromDB(shoppingList.id));
+  };
+
   return (
     <div className="border rounded p-4 mb-4 relative cursor-pointer">
       <div className="absolute top-2 right-2 bg-white p-1 rounded shadow-md z-10">
@@ -55,6 +63,7 @@ const ShoppingListBox = ({ shoppingList }) => {
           >
             💬
           </button>
+          <button onClick={handleDelete}>🗑️</button>
         </div>
       </div>
       <h2 className="text-xl font-bold mb-2 overflow-hidden text-ellipsis">
