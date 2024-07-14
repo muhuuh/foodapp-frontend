@@ -1,11 +1,13 @@
 // components/FavoritesMain.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import Title from "../../components/General/Title";
 import RecipeBox from "../../components/Recipes/RecipeBox";
 import ShoppingListOverview from "./ShoppingListOverview";
 
 const FavoritesMain = () => {
+  const location = useLocation();
   const [view, setView] = useState("Rezepte");
   const { recipes, shoppingLists, loading } = useSelector(
     (state) => state.recipes
@@ -15,8 +17,11 @@ const FavoritesMain = () => {
 
   const favoriteRecipes = recipes.filter((recipe) => recipe.favorited);
 
-  console.log("shoppingLists");
-  console.log(shoppingLists);
+  useEffect(() => {
+    if (location.state?.view) {
+      setView(location.state.view);
+    }
+  }, [location.state]);
 
   return (
     <div className="p-4 max-w-sm mx-auto">

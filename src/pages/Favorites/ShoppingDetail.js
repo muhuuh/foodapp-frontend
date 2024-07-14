@@ -1,5 +1,6 @@
+// components/Shopping/ShoppingDetail.js
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchShoppingListById } from "../../store/recipe-slice"; // Import the thunk
 
@@ -7,6 +8,7 @@ const ShoppingDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const shoppingList = useSelector((state) =>
     state.recipes.shoppingLists.find((list) => list.id === id)
   );
@@ -29,10 +31,14 @@ const ShoppingDetail = () => {
     return <p>Shopping list not found.</p>;
   }
 
+  const handleBackClick = () => {
+    navigate("/favorites", { state: { view: "Shoppinglist" } });
+  };
+
   return (
     <div className="p-4 max-w-md mx-auto">
       <button
-        onClick={() => navigate("/favorites")}
+        onClick={handleBackClick}
         className="absolute top-4 right-4 p-2 bg-gray-200 rounded-full"
       >
         ← Zurück
