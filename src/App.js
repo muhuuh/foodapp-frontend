@@ -17,6 +17,7 @@ import LocalStoreMain from "./pages/Store/LocalStoreMain";
 import Landingpage from "./pages/Landingpage";
 import FavoritesMain from "./pages/Favorites/FavoritesMain";
 import Footer from "./components/General/Footer";
+import ShoppingDetail from "./pages/Favorites/ShoppingDetail";
 
 function App() {
   const dispatch = useDispatch();
@@ -72,6 +73,7 @@ function App() {
           <Route path="/recipe" element={<RecipeMain />} />
           <Route path="/recipe_overview" element={<RecipeOverview />} />
           <Route path="/recipe/:id" element={<RecipeDetail />} />
+          <Route path="/shoppinglist/:id" element={<ShoppingDetail />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>

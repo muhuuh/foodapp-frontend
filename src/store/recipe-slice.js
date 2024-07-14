@@ -271,6 +271,26 @@ export const saveShoppingListToDB = createAsyncThunk(
   }
 );
 
+// Update shopping list comment
+export const updateShoppingListCommentInDB = createAsyncThunk(
+  "recipes/updateShoppingListCommentInDB",
+  async ({ id, user_comment }, { rejectWithValue }) => {
+    try {
+      const { data, error } = await supabase
+        .from("shopping_list")
+        .update({ user_comment })
+        .eq("id", id);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+      return { id, user_comment };
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 const defaultState = {
   recipes: [],
   shoppingLists: [],
