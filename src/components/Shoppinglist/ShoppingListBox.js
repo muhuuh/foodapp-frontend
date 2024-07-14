@@ -1,17 +1,19 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { updateShoppingListCommentInDB } from "../../store/recipe-slice";
 import CommentModal from "../Recipes/CommentModal";
+import { useDispatch } from "react-redux";
+import { updateShoppingListCommentInDB } from "../../store/recipe-slice";
 
 const ShoppingListBox = ({ shoppingList }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [comment, setComment] = useState(shoppingList.user_comment || "");
 
   const handleCheckLocalClick = (e) => {
     e.stopPropagation();
-    alert("Checking local stores is not implemented yet.");
+    navigate(`/shoppinglist/${shoppingList.id}`);
   };
 
   const handleShareClick = (e) => {

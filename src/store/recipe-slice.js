@@ -291,6 +291,27 @@ export const updateShoppingListCommentInDB = createAsyncThunk(
   }
 );
 
+// Fetch a shopping list by ID
+export const fetchShoppingListById = createAsyncThunk(
+  "recipes/fetchShoppingListById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const { data, error } = await supabase
+        .from("shopping_list")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 const defaultState = {
   recipes: [],
   shoppingLists: [],
@@ -390,6 +411,9 @@ const recipesSlice = createSlice({
         state.shoppingLists = action.payload;
       })
       .addCase(saveShoppingListToDB.fulfilled, (state, action) => {
+        state.shoppingLists.push(action.payload);
+      })
+      .addCase(fetchShoppingListById.fulfilled, (state, action) => {
         state.shoppingLists.push(action.payload);
       });
   },
