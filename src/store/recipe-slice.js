@@ -90,24 +90,6 @@ export const toggleFavoriteRecipeInDB = createAsyncThunk(
   }
 );
 
-export const addShoppingList = createAsyncThunk(
-  "recipes/addShoppingList",
-  async ({ userId, listName, ingredients }, { rejectWithValue }) => {
-    try {
-      const { data, error } = await supabase
-        .from("shopping_list")
-        .insert({ user_id: userId, list_name: listName, ingredients });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-      return data[0];
-    } catch (err) {
-      return rejectWithValue(err.message);
-    }
-  }
-);
-
 // store/recipesSlice.js
 export const updateRecipeInDB = createAsyncThunk(
   "recipes/updateRecipeInDB",
@@ -252,6 +234,26 @@ export const updateShoppingListCommentInDB = createAsyncThunk(
   }
 );
 
+// Define the thunk for updating shopping lists
+export const updateShoppingListInDB = createAsyncThunk(
+  "recipes/updateShoppingListInDB",
+  async ({ id, ingredients }, { rejectWithValue }) => {
+    try {
+      const { data, error } = await supabase
+        .from("shopping_list")
+        .update({ ingredients })
+        .eq("id", id);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+      return { id, ingredients };
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 // Fetch a shopping list by ID
 export const fetchShoppingListById = createAsyncThunk(
   "recipes/fetchShoppingListById",
@@ -361,10 +363,6 @@ const recipesSlice = createSlice({
           recipe.favorited = favorited;
         }
       })
-
-      .addCase(addShoppingList.fulfilled, (state, action) => {
-        state.shoppingLists.push(action.payload);
-      })
       .addCase(updateRecipeInDB.fulfilled, (state, action) => {
         const { id, recipe_info } = action.payload;
         const recipe = state.recipes.find((recipe) => recipe.id === id);
@@ -387,6 +385,13 @@ const recipesSlice = createSlice({
       })
       .addCase(fetchShoppingListById.fulfilled, (state, action) => {
         state.shoppingLists.push(action.payload);
+      })
+      .addCase(updateShoppingListInDB.fulfilled, (state, action) => {
+        const { id, ingredients } = action.payload;
+        const shoppingList = state.shoppingLists.find((list) => list.id === id);
+        if (shoppingList) {
+          shoppingList.ingredients = ingredients;
+        }
       })
       .addCase(deleteShoppingListFromDB.fulfilled, (state, action) => {
         state.shoppingLists = state.shoppingLists.filter(
