@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
-import { addShoppingList } from "../../store/recipe-slice";
+import { saveShoppingListToDB } from "../../store/recipe-slice";
 import RecipeModification from "../../components/Recipes/RecipeModification";
 import LoadingSpinner from "../../components/General/LoadingSpinner";
 import ShoppingListModal from "../../components/Shoppinglist/ShoppingListModal";
@@ -33,9 +33,14 @@ const RecipeDetail = () => {
 
   const handleSaveShoppingList = (listName, selectedIngredients) => {
     dispatch(
-      addShoppingList({ userId, listName, ingredients: selectedIngredients })
-    );
-    setIsShoppingListModalOpen(false);
+      saveShoppingListToDB({
+        userId,
+        list_name: listName,
+        ingredients: selectedIngredients,
+      })
+    ).then(() => {
+      setIsShoppingListModalOpen(false);
+    });
   };
 
   return (

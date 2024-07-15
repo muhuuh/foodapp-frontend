@@ -219,7 +219,8 @@ export const saveShoppingListToDB = createAsyncThunk(
     try {
       const { data, error } = await supabase
         .from("shopping_list")
-        .insert([{ user_id: userId, list_name, ingredients }]);
+        .insert([{ user_id: userId, list_name, ingredients }])
+        .select();
 
       if (error) {
         throw new Error(error.message);
