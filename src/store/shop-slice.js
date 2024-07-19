@@ -22,6 +22,7 @@ const defaultState = {
   intro_sentence: "AI short sentence to introduce, the results of the search",
   ingredients: [
     {
+      id: "d1d566b1-4510-49ea-838d-1a97a401d550",
       store_name: "Bauernhof Mueller",
       web_link: "",
       store_image_link: "",
@@ -31,6 +32,7 @@ const defaultState = {
       google_stars: 4.3,
     },
     {
+      id: "d1d566b1-4510-49ea-838d-1a97a401d551",
       store_name: "Metzgerei Anna",
       web_link: "",
       store_image_link: "",
@@ -40,6 +42,7 @@ const defaultState = {
       google_stars: 4.7,
     },
     {
+      id: "d1d566b1-4510-49ea-838d-1a97a401d552",
       store_name: "Baeckerei Weber",
       web_link: "",
       store_image_link: "",

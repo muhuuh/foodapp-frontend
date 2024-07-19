@@ -15,7 +15,13 @@ export const fetchUserProfile = createAsyncThunk(
       if (error) {
         throw new Error(error.message);
       }
-      return data;
+
+      // Ensure favorited is properly initialized if it's null
+      const favorited = data.favorited || {
+        favorite_shops: [],
+        favorite_ingredients: [],
+      };
+      return { ...data, favorited };
     } catch (err) {
       return rejectWithValue(err.message);
     }
@@ -43,8 +49,63 @@ export const updateUserProfileInDB = createAsyncThunk(
   }
 );
 
+export const toggleFavoriteShop = createAsyncThunk(
+  "user/toggleFavoriteShop",
+  async ({ userId, shopId }, { getState, rejectWithValue }) => {
+    try {
+      console.log("test");
+      const { userProfile } = getState().users;
+      console.log(userProfile);
+      const favorited = userProfile.favorited || {
+        favorite_shops: [],
+        favorite_ingredients: [],
+      };
+      console.log(favorited);
+      let updatedFavorites = [...favorited.favorite_shops]; // Make a true copy of the array
+      console.log("updatedFavorites");
+      console.log(updatedFavorites);
+      console.log(shopId);
+
+      if (updatedFavorites.includes(shopId)) {
+        console.log("includes");
+        updatedFavorites = updatedFavorites.filter((id) => id !== shopId);
+      } else {
+        console.log("not includes");
+        updatedFavorites.push(shopId);
+      }
+      console.log("updatedFavorites2");
+      console.log(updatedFavorites);
+      console.log(userId);
+
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .update({
+          favorited: {
+            ...favorited,
+            favorite_shops: updatedFavorites,
+          },
+        })
+        .eq("id", userId)
+        .select();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!data) {
+        throw new Error("No data returned from the update operation");
+      }
+
+      return { favorite_shops: updatedFavorites };
+    } catch (err) {
+      console.error("Error in toggleFavoriteShop:", err);
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 const defaultState = {
-  userProfile: {},
+  userProfile: { favorited: { favorite_shops: [], favorite_ingredients: [] } },
   userId: null,
   loading: false,
   error: null,
@@ -86,6 +147,10 @@ const usersSlice = createSlice({
       .addCase(updateUserProfileInDB.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(toggleFavoriteShop.fulfilled, (state, action) => {
+        state.userProfile.favorited.favorite_shops =
+          action.payload.favorite_shops;
       });
   },
 });

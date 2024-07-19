@@ -21,6 +21,7 @@ import ShoppingDetail from "./pages/Favorites/ShoppingDetail";
 import ShopMain from "./pages/LocalStore/Shop/ShopMain";
 import IngredientMain from "./pages/LocalStore/IngredientMain";
 import CartMain from "./pages/Cart/CartMain";
+import ShopDetailPage from "./pages/LocalStore/Shop/ShopDetailPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -74,6 +75,7 @@ function App() {
           <Route path="/main_view" element={<LocalSearch />} />
           <Route path="/ingredient_overview" element={<IngredientMain />} />
           <Route path="/shop_overview" element={<ShopMain />} />
+          <Route path="/shop_detailpage" element={<ShopDetailPage />} />
           <Route path="/recipe" element={<RecipeMain />} />
           <Route path="/recipe_overview" element={<RecipeOverview />} />
           <Route path="/recipe/:id" element={<RecipeDetail />} />
