@@ -6,12 +6,7 @@ export const fetchIngredients = createAsyncThunk(
   "user/fetchIngredients",
   async (userId, { rejectWithValue }) => {
     try {
-      const { data, error } = await supabase
-        .from("ingredients")
-        .select("*")
-        .eq("id", userId)
-        .single();
-
+      const { data, error } = await supabase.from("ingredients").select("*");
       if (error) {
         throw new Error(error.message);
       }
