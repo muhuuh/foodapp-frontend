@@ -19,7 +19,7 @@ import FavoritesMain from "./pages/Favorites/FavoritesMain";
 import Footer from "./components/General/Footer";
 import ShoppingDetail from "./pages/Favorites/ShoppingDetail";
 import ShopMain from "./pages/LocalStore/Shop/ShopMain";
-import IngredientMain from "./pages/LocalStore/Ingredient/IngredientMain";
+import IngredientMain from "./pages/LocalStore/IngredientMain";
 import CartMain from "./pages/Cart/CartMain";
 
 function App() {

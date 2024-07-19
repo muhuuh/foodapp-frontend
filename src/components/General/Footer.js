@@ -54,7 +54,7 @@ const Footer = () => {
                 className="cursor-pointer"
                 onClick={() => handleIconClick("/main_view")}
               >
-                Rezepte
+                Einkaufen
               </div>
             </div>
           )}

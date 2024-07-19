@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import IngredientBox from "../../../components/Store/Ingredient/IngredientBox";
+import IngredientBox from "../../components/Store/Ingredient/IngredientBox";
 
 const IngredientMain = () => {
   const data = useSelector((state) => state.ingredients);
