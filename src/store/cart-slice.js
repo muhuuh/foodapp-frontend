@@ -23,7 +23,7 @@ export const fetchCartHistory = createAsyncThunk(
 
 const defaultState = {
   currentCart: {
-    cart_ingredients: [{ ingredient: "", amount: 0, price: 0 }],
+    cart_ingredients: [],
     cart_total_price: 0,
     cart_total_amount: 0,
     wish_date_pickup: "",
@@ -38,7 +38,37 @@ const cartSlice = createSlice({
   initialState: defaultState,
   reducers: {
     updateCartLocal(state, action) {
-      state.currentCart = action.payload;
+      const { ingredient, amount, action: updateAction } = action.payload;
+      const existingIngredient = state.currentCart.cart_ingredients.find(
+        (item) =>
+          item.ingredient.general_name === ingredient.general_name &&
+          item.ingredient.store_id === ingredient.store_id
+      );
+
+      if (existingIngredient) {
+        if (updateAction === "increase") {
+          existingIngredient.amount += amount;
+        } else if (
+          updateAction === "decrease" &&
+          existingIngredient.amount > 0
+        ) {
+          existingIngredient.amount -= amount;
+        }
+      } else if (updateAction === "increase") {
+        state.currentCart.cart_ingredients.push({ ingredient, amount });
+      }
+
+      state.currentCart.cart_total_amount =
+        state.currentCart.cart_ingredients.reduce(
+          (total, item) => total + item.amount,
+          0
+        );
+      state.currentCart.cart_total_price =
+        state.currentCart.cart_ingredients.reduce(
+          (total, item) =>
+            total + item.amount * parseFloat(item.ingredient.price),
+          0
+        );
     },
   },
   extraReducers: (builder) => {
@@ -58,5 +88,5 @@ const cartSlice = createSlice({
   },
 });
 
-export const {} = cartSlice.actions;
+export const { updateCartLocal } = cartSlice.actions;
 export default cartSlice.reducer;

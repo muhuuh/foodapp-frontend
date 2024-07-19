@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import CartButton from "../../Cart/CartButton";
 
 const IngredientDetail = ({ general_name }) => {
   const data = useSelector((state) => state.ingredients);
@@ -24,11 +25,7 @@ const IngredientDetail = ({ general_name }) => {
           <p>
             <strong>Price:</strong> {ingredient.price}€
           </p>
-          <div className="flex items-center">
-            <button className="p-2 bg-blue-500 text-white rounded">
-              - 1 +
-            </button>
-          </div>
+          <CartButton ingredient={ingredient} />
         </div>
       ))}
     </div>
