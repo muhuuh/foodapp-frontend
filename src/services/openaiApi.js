@@ -16,7 +16,7 @@ export const getRecipeFromAI = async (
 ) => {
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
@@ -88,7 +88,7 @@ const parseResult = (result) => {
 export const modifyRecipeWithAI = async ({ recipe, modificationText }) => {
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
