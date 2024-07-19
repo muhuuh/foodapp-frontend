@@ -54,6 +54,13 @@ const cartSlice = createSlice({
         ) {
           existingIngredient.amount -= amount;
         }
+        // Remove the ingredient if the amount is zero
+        if (existingIngredient.amount === 0) {
+          state.currentCart.cart_ingredients =
+            state.currentCart.cart_ingredients.filter(
+              (item) => item !== existingIngredient
+            );
+        }
       } else if (updateAction === "increase") {
         state.currentCart.cart_ingredients.push({ ingredient, amount });
       }

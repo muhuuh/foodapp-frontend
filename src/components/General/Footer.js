@@ -1,6 +1,6 @@
-// components/Footer.js
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import MediaQuery from "react-responsive";
 
 import TractorIcon from "./Icons/TractorIcon";
@@ -16,6 +16,10 @@ const Footer = () => {
 
   const tractorRef = useRef(null);
   const userRef = useRef(null);
+
+  const cartItemsCount = useSelector(
+    (state) => state.cart.currentCart.cart_ingredients.length
+  );
 
   const handleIconClick = (path) => {
     navigate(path);
@@ -67,6 +71,11 @@ const Footer = () => {
         <div className="relative" ref={userRef}>
           <button onClick={() => setShowUserDropdown(!showUserDropdown)}>
             <UserNoFillIcon />
+            {cartItemsCount > 0 && (
+              <span className="absolute top-0 right-0 bg-green-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">
+                {cartItemsCount}
+              </span>
+            )}
           </button>
           {showUserDropdown && (
             <div className="absolute bottom-full mb-2 bg-gray-700 rounded p-2">
@@ -77,10 +86,15 @@ const Footer = () => {
                 Profil
               </div>
               <div
-                className="cursor-pointer"
+                className="cursor-pointer flex items-center"
                 onClick={() => handleIconClick("/cart")}
               >
-                Cart
+                <span>Cart</span>
+                {cartItemsCount > 0 && (
+                  <span className="ml-2 bg-green-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">
+                    {cartItemsCount}
+                  </span>
+                )}
               </div>
             </div>
           )}

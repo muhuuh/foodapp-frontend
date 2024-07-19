@@ -7,34 +7,49 @@ const CartButton = ({ ingredient }) => {
   const cartIngredients = useSelector(
     (state) => state.cart.currentCart.cart_ingredients
   );
-  const currentIngredient = cartIngredients.find(
+
+  const existingIngredient = cartIngredients.find(
     (item) =>
       item.ingredient.general_name === ingredient.general_name &&
       item.ingredient.store_id === ingredient.store_id
   );
 
-  const currentAmount = currentIngredient ? currentIngredient.amount : 0;
+  const amount = existingIngredient ? existingIngredient.amount : 0;
 
   const handleIncrease = () => {
-    dispatch(updateCartLocal({ ingredient, amount: 1, action: "increase" }));
+    dispatch(
+      updateCartLocal({
+        ingredient,
+        amount: 1,
+        action: "increase",
+      })
+    );
   };
 
   const handleDecrease = () => {
-    dispatch(updateCartLocal({ ingredient, amount: 1, action: "decrease" }));
+    if (amount > 0) {
+      dispatch(
+        updateCartLocal({
+          ingredient,
+          amount: 1,
+          action: "decrease",
+        })
+      );
+    }
   };
 
   return (
     <div className="flex items-center">
       <button
         onClick={handleDecrease}
-        className="p-2 bg-blue-500 text-white rounded mr-2"
+        className="p-2 bg-red-500 text-white rounded"
       >
         -
       </button>
-      <span>{currentAmount}</span>
+      <span className="mx-2">{amount}</span>
       <button
         onClick={handleIncrease}
-        className="p-2 bg-blue-500 text-white rounded ml-2"
+        className="p-2 bg-green-500 text-white rounded"
       >
         +
       </button>
