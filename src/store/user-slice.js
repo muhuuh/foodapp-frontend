@@ -53,29 +53,19 @@ export const toggleFavoriteShop = createAsyncThunk(
   "user/toggleFavoriteShop",
   async ({ userId, shopId }, { getState, rejectWithValue }) => {
     try {
-      console.log("test");
       const { userProfile } = getState().users;
-      console.log(userProfile);
       const favorited = userProfile.favorited || {
         favorite_shops: [],
         favorite_ingredients: [],
       };
-      console.log(favorited);
-      let updatedFavorites = [...favorited.favorite_shops]; // Make a true copy of the array
-      console.log("updatedFavorites");
-      console.log(updatedFavorites);
-      console.log(shopId);
+
+      let updatedFavorites = [...favorited.favorite_shops];
 
       if (updatedFavorites.includes(shopId)) {
-        console.log("includes");
         updatedFavorites = updatedFavorites.filter((id) => id !== shopId);
       } else {
-        console.log("not includes");
         updatedFavorites.push(shopId);
       }
-      console.log("updatedFavorites2");
-      console.log(updatedFavorites);
-      console.log(userId);
 
       const { data, error } = await supabase
         .from("user_profiles")

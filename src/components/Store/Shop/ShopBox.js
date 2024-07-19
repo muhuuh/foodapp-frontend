@@ -7,11 +7,9 @@ const ShopBox = ({ shop }) => {
   const dispatch = useDispatch();
   const userProfile = useSelector((state) => state.users.userProfile);
   const userId = useSelector((state) => state.users.userId);
-  console.log("shop");
-  console.log(shop);
 
   const isFavorited =
-    userProfile?.favorited?.favorite_shops?.includes(shop.store_id) || false;
+    userProfile?.favorited?.favorite_shops?.includes(shop.id) || false;
 
   const handleFavoriteToggle = (e) => {
     e.stopPropagation();
