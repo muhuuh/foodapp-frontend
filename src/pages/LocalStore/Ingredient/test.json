@@ -1,0 +1,29 @@
+{
+  "intro_sentence": "",
+  "ingredients": [
+    {
+      "general_name": "banana",
+      "store_specific_name": "banana xtra fresh",
+      "ingredient_image": "",
+      "pack_size": "500g",
+      "price": "5.49",
+      "store_id": "store_a"
+    },
+    {
+      "general_name": "banana",
+      "store_specific_name": "banana green fresh",
+      "ingredient_image": "",
+      "pack_size": "400g",
+      "price": "6.49",
+      "store_id": "store_b"
+    },
+    {
+      "general_name": "tomatoe",
+      "store_specific_name": "tomatoe xtra big",
+      "ingredient_image": "",
+      "pack_size": "400g",
+      "price": "2.49",
+      "store_id": "store_a"
+    }
+  ]
+}

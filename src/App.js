@@ -13,11 +13,13 @@ import Settings from "./pages/Login/Settings";
 import RecipeMain from "./pages/Recipe/RecipeMain";
 import RecipeOverview from "./pages/Recipe/RecipeOverview";
 import RecipeDetail from "./pages/Recipe/RecipeDetail";
-import LocalStoreMain from "./pages/Store/LocalStoreMain";
+import LocalSearch from "./pages/LocalStore/LocalSearch";
 import Landingpage from "./pages/Landingpage";
 import FavoritesMain from "./pages/Favorites/FavoritesMain";
 import Footer from "./components/General/Footer";
 import ShoppingDetail from "./pages/Favorites/ShoppingDetail";
+import ShopMain from "./pages/LocalStore/Shop/ShopMain";
+import IngredientMain from "./pages/LocalStore/Ingredient/IngredientMain";
 
 function App() {
   const dispatch = useDispatch();
@@ -68,12 +70,14 @@ function App() {
         <Route path="/reset_password" element={<ResetPassword />} />
         <Route path="/landingpage" element={<Landingpage />} />
         <Route element={<PrivateRoute />}>
-          <Route path="/main_view" element={<LocalStoreMain />} />
-          <Route path="/favorites" element={<FavoritesMain />} />
+          <Route path="/main_view" element={<LocalSearch />} />
+          <Route path="/ingredient_overview" element={<IngredientMain />} />
+          <Route path="/shop_overview" element={<ShopMain />} />
           <Route path="/recipe" element={<RecipeMain />} />
           <Route path="/recipe_overview" element={<RecipeOverview />} />
           <Route path="/recipe/:id" element={<RecipeDetail />} />
           <Route path="/shoppinglist/:id" element={<ShoppingDetail />} />
+          <Route path="/favorites" element={<FavoritesMain />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>
