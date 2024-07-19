@@ -31,6 +31,7 @@ const defaultState = {
       ingredient_image: "",
       pack_size: "500g",
       price: "5.49",
+      standardised_price: "11.49/kg",
       store_id: "store_a",
     },
     {
@@ -39,6 +40,7 @@ const defaultState = {
       ingredient_image: "",
       pack_size: "400g",
       price: "6.49",
+      standardised_price: "13.49/kg",
       store_id: "store_b",
     },
     {
@@ -47,6 +49,7 @@ const defaultState = {
       ingredient_image: "",
       pack_size: "400g",
       price: "2.49",
+      standardised_price: "5.49/kg",
       store_id: "store_a",
     },
   ],

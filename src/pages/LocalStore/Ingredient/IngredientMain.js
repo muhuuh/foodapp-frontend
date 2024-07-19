@@ -1,34 +1,53 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import IngredientBox from "../../../components/Store/Ingredient/IngredientBox";
-import IngredientDetail from "../../../components/Store/Ingredient/IngredientDetail";
 
 const IngredientMain = () => {
   const data = useSelector((state) => state.ingredients);
   const [selectedIngredient, setSelectedIngredient] = useState(null);
 
+  // Summarize the ingredients
+  const summarizedIngredients = data.ingredients.reduce((acc, ingredient) => {
+    const found = acc.find(
+      (item) => item.general_name === ingredient.general_name
+    );
+    if (found) {
+      found.count += 1;
+      found.standardised_price += parseFloat(
+        ingredient.standardised_price.split("/")[0]
+      );
+    } else {
+      acc.push({
+        ...ingredient,
+        count: 1,
+        standardised_price: parseFloat(
+          ingredient.standardised_price.split("/")[0]
+        ),
+      });
+    }
+    return acc;
+  }, []);
+
   const handleIngredientClick = (ingredient) => {
-    setSelectedIngredient(ingredient);
+    if (selectedIngredient === ingredient.general_name) {
+      setSelectedIngredient(null);
+    } else {
+      setSelectedIngredient(ingredient.general_name);
+    }
   };
 
   return (
     <div className="p-4 max-w-md mx-auto">
       <h1 className="text-2xl font-bold mb-4">Einkaufen</h1>
       <p className="mb-4">{data.intro_sentence}</p>
-      {selectedIngredient ? (
-        <IngredientDetail
-          ingredient={selectedIngredient}
-          onBack={() => setSelectedIngredient(null)}
+      {summarizedIngredients.map((ingredient, index) => (
+        <IngredientBox
+          key={index}
+          ingredient={ingredient}
+          onClick={() => handleIngredientClick(ingredient)}
+          isSelected={selectedIngredient === ingredient.general_name}
         />
-      ) : (
-        data.ingredients.map((ingredient, index) => (
-          <IngredientBox
-            key={index}
-            ingredient={ingredient}
-            onClick={() => handleIngredientClick(ingredient)}
-          />
-        ))
-      )}
+      ))}
     </div>
   );
 };

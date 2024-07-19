@@ -1,23 +1,30 @@
 import React from "react";
+import IngredientDetail from "./IngredientDetail";
 
-const IngredientBox = ({ ingredient, onClick }) => {
+const IngredientBox = ({ ingredient, onClick, isSelected }) => {
   return (
-    <div
-      className="border rounded p-4 mb-4 flex justify-between items-center cursor-pointer"
-      onClick={onClick}
-    >
-      <div>
-        <h2 className="text-lg font-bold">{ingredient.general_name}</h2>
-        <p>{ingredient.store_id} Verkäufer</p>
-        <p>
-          {ingredient.price}€ / {ingredient.pack_size}
-        </p>
+    <div>
+      <div
+        className="border rounded p-4 mb-4 flex justify-between items-center cursor-pointer"
+        onClick={onClick}
+      >
+        <div>
+          <h2 className="text-lg font-bold">{ingredient.general_name}</h2>
+          <p>{ingredient.count} Verkäufer</p>
+          <p>
+            {(ingredient.standardised_price / ingredient.count).toFixed(2)}€ /
+            kg
+          </p>
+        </div>
+        <img
+          src={ingredient.ingredient_image}
+          alt={ingredient.general_name}
+          className="w-16 h-16 object-cover"
+        />
       </div>
-      <img
-        src={ingredient.ingredient_image}
-        alt={ingredient.general_name}
-        className="w-16 h-16 object-cover"
-      />
+      {isSelected && (
+        <IngredientDetail general_name={ingredient.general_name} />
+      )}
     </div>
   );
 };
