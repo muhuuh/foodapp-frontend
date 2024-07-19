@@ -76,6 +76,12 @@ const Footer = () => {
               >
                 Profil
               </div>
+              <div
+                className="cursor-pointer"
+                onClick={() => handleIconClick("/cart")}
+              >
+                Cart
+              </div>
             </div>
           )}
         </div>

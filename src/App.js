@@ -20,6 +20,7 @@ import Footer from "./components/General/Footer";
 import ShoppingDetail from "./pages/Favorites/ShoppingDetail";
 import ShopMain from "./pages/LocalStore/Shop/ShopMain";
 import IngredientMain from "./pages/LocalStore/Ingredient/IngredientMain";
+import CartMain from "./pages/Cart/CartMain";
 
 function App() {
   const dispatch = useDispatch();
@@ -79,6 +80,7 @@ function App() {
           <Route path="/shoppinglist/:id" element={<ShoppingDetail />} />
           <Route path="/favorites" element={<FavoritesMain />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/cart" element={<CartMain />} />
         </Route>
       </Routes>
       <Footer />
