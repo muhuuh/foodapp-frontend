@@ -1,27 +1,47 @@
-// components/FavoritesMain.js
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import Title from "../../components/General/Title";
 import RecipeBox from "../../components/Recipes/RecipeBox";
-import ShoppingListOverview from "./ShoppingListOverview";
+import ShopBox from "../../components/Store/Shop/ShopBox";
+import { fetchFavoriteShops } from "../../store/user-slice";
 
 const FavoritesMain = () => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const [view, setView] = useState("Rezepte");
-  const { recipes, shoppingLists, loading } = useSelector(
-    (state) => state.recipes
-  );
+  const { userProfile, loading } = useSelector((state) => state.users);
+  const { recipes } = useSelector((state) => state.recipes);
+  const { favorites } = useSelector((state) => state.users);
+  const [favoriteRecipes, setFavoriteRecipes] = useState([]);
+  const [favoriteShops, setFavoriteShops] = useState([]);
 
   const title = "Favoriten";
-
-  const favoriteRecipes = recipes.filter((recipe) => recipe.favorited);
 
   useEffect(() => {
     if (location.state?.view) {
       setView(location.state.view);
     }
-  }, [location.state]);
+
+    if (userProfile.favorited) {
+      // Filter favorite recipes from all recipes using the favorite_recipes IDs
+      const filteredFavoriteRecipes = recipes.filter((recipe) =>
+        userProfile.favorited.favorite_recipes.includes(recipe.id)
+      );
+      setFavoriteRecipes(filteredFavoriteRecipes);
+
+      if (view === "Shops") {
+        // Fetch favorite shops when the "Shops" tab is clicked
+        dispatch(fetchFavoriteShops(userProfile.favorited.favorite_shops));
+      }
+    }
+  }, [location.state, userProfile.favorited, recipes, view, dispatch]);
+
+  useEffect(() => {
+    if (view === "Shops" && favorites.shops.length > 0) {
+      setFavoriteShops(favorites.shops);
+    }
+  }, [view, favorites.shops]);
 
   return (
     <div className="p-4 max-w-sm mx-auto">
@@ -37,11 +57,11 @@ const FavoritesMain = () => {
         </button>
         <button
           className={`p-2 rounded ${
-            view === "Shoppinglist" ? "bg-green-500 text-white" : "bg-gray-200"
+            view === "Shops" ? "bg-green-500 text-white" : "bg-gray-200"
           }`}
-          onClick={() => setView("Shoppinglist")}
+          onClick={() => setView("Shops")}
         >
-          Shoppinglist
+          Shops
         </button>
       </div>
 
@@ -57,8 +77,15 @@ const FavoritesMain = () => {
           )}
         </div>
       )}
-      {view === "Shoppinglist" && (
-        <ShoppingListOverview shoppingLists={shoppingLists} />
+      {view === "Shops" && (
+        <div>
+          {loading && <p>Loading...</p>}
+          {!loading && favoriteShops.length > 0 ? (
+            favoriteShops.map((shop) => <ShopBox key={shop.id} shop={shop} />)
+          ) : (
+            <p>Keine Favoriten verfügbar.</p>
+          )}
+        </div>
       )}
     </div>
   );

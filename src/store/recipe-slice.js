@@ -70,26 +70,6 @@ export const deleteRecipeFromDB = createAsyncThunk(
   }
 );
 
-// Async thunk to toggle the favorite status of a recipe
-export const toggleFavoriteRecipeInDB = createAsyncThunk(
-  "recipes/toggleFavoriteRecipeInDB",
-  async ({ recipeId, favorited }, { rejectWithValue }) => {
-    try {
-      const { data, error } = await supabase
-        .from("recipes")
-        .update({ favorited })
-        .eq("id", recipeId);
-
-      if (error) {
-        throw new Error(error.message);
-      }
-      return { recipeId, favorited };
-    } catch (err) {
-      return rejectWithValue(err.message);
-    }
-  }
-);
-
 // store/recipesSlice.js
 export const updateRecipeInDB = createAsyncThunk(
   "recipes/updateRecipeInDB",
@@ -356,13 +336,7 @@ const recipesSlice = createSlice({
           (recipe) => recipe.id !== action.payload
         );
       })
-      .addCase(toggleFavoriteRecipeInDB.fulfilled, (state, action) => {
-        const { recipeId, favorited } = action.payload;
-        const recipe = state.recipes.find((recipe) => recipe.id === recipeId);
-        if (recipe) {
-          recipe.favorited = favorited;
-        }
-      })
+
       .addCase(updateRecipeInDB.fulfilled, (state, action) => {
         const { id, recipe_info } = action.payload;
         const recipe = state.recipes.find((recipe) => recipe.id === id);

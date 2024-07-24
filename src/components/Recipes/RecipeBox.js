@@ -6,7 +6,7 @@ import {
   updateRecipeCommentInDB,
 } from "../../store/recipe-slice";
 import { toggleFavoriteRecipe } from "../../store/user-slice";
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 import LoadingSpinner from "../../components/General/LoadingSpinner";
 import CommentModal from "./CommentModal";
 
@@ -64,6 +64,10 @@ const RecipeBox = ({ recipe }) => {
     });
   };
 
+  const formattedDate = isValid(new Date(recipe.created_at))
+    ? format(new Date(recipe.created_at), "dd/MM")
+    : "Invalid date";
+
   return (
     <div
       className="border rounded p-4 mb-4 relative cursor-pointer"
@@ -71,9 +75,7 @@ const RecipeBox = ({ recipe }) => {
     >
       <div className="absolute top-2 right-2 bg-white p-1 rounded shadow-md z-10">
         <div className="flex items-center space-x-2">
-          <span className="text-xs">
-            {format(new Date(recipe.created_at), "dd/MM")}
-          </span>
+          <span className="text-xs">{formattedDate}</span>
           <button onClick={handleShareClick}>🔗</button>
           <button
             onClick={(e) => {
@@ -85,22 +87,28 @@ const RecipeBox = ({ recipe }) => {
           </button>
         </div>
       </div>
-      <h2 className="text-xl font-bold mb-2 overflow-hidden text-ellipsis">
-        {recipe.recipe_info.recipe_title}
-      </h2>
-      {recipe.image_link ? (
-        <img
-          src={recipe.image_link}
-          alt={recipe.recipe_info.recipe_title}
-          className="mb-2 w-full h-40 object-cover"
-        />
-      ) : (
-        <div className="mb-2 w-full h-40 bg-gray-200 flex items-center justify-center">
-          <div>
-            <LoadingSpinner />
-            <p className="text-center">Bilder werden kreiert, ein Moment ...</p>
-          </div>
-        </div>
+      {recipe.recipe_info && (
+        <>
+          <h2 className="text-xl font-bold mb-2 overflow-hidden text-ellipsis">
+            {recipe.recipe_info.recipe_title}
+          </h2>
+          {recipe.image_link ? (
+            <img
+              src={recipe.image_link}
+              alt={recipe.recipe_info.recipe_title}
+              className="mb-2 w-full h-40 object-cover"
+            />
+          ) : (
+            <div className="mb-2 w-full h-40 bg-gray-200 flex items-center justify-center">
+              <div>
+                <LoadingSpinner />
+                <p className="text-center">
+                  Bilder werden kreiert, ein Moment ...
+                </p>
+              </div>
+            </div>
+          )}
+        </>
       )}
       <div
         className="flex justify-between"

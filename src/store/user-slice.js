@@ -28,6 +28,27 @@ export const fetchUserProfile = createAsyncThunk(
   }
 );
 
+// Async thunk to fetch favorite shops by their IDs
+export const fetchFavoriteShops = createAsyncThunk(
+  "user/fetchFavoriteShops",
+  async (shopIds, { rejectWithValue }) => {
+    try {
+      const { data, error } = await supabase
+        .from("store")
+        .select("*")
+        .in("id", shopIds);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 // Async thunk to update user profile in the database
 export const updateUserProfileInDB = createAsyncThunk(
   "user/updateUserProfileInDB",
@@ -142,6 +163,12 @@ export const toggleFavoriteRecipe = createAsyncThunk(
 const defaultState = {
   userProfile: { favorited: { favorite_shops: [], favorite_recipes: [] } },
   userId: null,
+  favorites: {
+    recipes: [],
+    shops: [],
+    loading: false,
+    error: null,
+  },
   loading: false,
   error: null,
 };
@@ -190,6 +217,18 @@ const usersSlice = createSlice({
       .addCase(toggleFavoriteRecipe.fulfilled, (state, action) => {
         state.userProfile.favorited.favorite_recipes =
           action.payload.favorite_recipes;
+      })
+      .addCase(fetchFavoriteShops.pending, (state) => {
+        state.favorites.loading = true;
+        state.favorites.error = null;
+      })
+      .addCase(fetchFavoriteShops.fulfilled, (state, action) => {
+        state.favorites.loading = false;
+        state.favorites.shops = action.payload;
+      })
+      .addCase(fetchFavoriteShops.rejected, (state, action) => {
+        state.favorites.loading = false;
+        state.favorites.error = action.payload;
       });
   },
 });
