@@ -22,6 +22,7 @@ import ShopMain from "./pages/LocalStore/Shop/ShopMain";
 import IngredientMain from "./pages/LocalStore/IngredientMain";
 import CartMain from "./pages/Cart/CartMain";
 import ShopDetailPage from "./pages/LocalStore/Shop/ShopDetailPage";
+import ShoppingListOverview from "./pages/Favorites/ShoppingListOverview";
 
 function App() {
   const dispatch = useDispatch();
@@ -59,7 +60,6 @@ function App() {
   useEffect(() => {
     if (userId) {
       dispatch(fetchRecipes(userId));
-      dispatch(fetchShoppingLists(userId));
     }
   }, [dispatch, userId]);
 
@@ -79,6 +79,7 @@ function App() {
           <Route path="/recipe" element={<RecipeMain />} />
           <Route path="/recipe_overview" element={<RecipeOverview />} />
           <Route path="/recipe/:id" element={<RecipeDetail />} />
+          <Route path="/shoppinglisten" element={<ShoppingListOverview />} />
           <Route path="/shoppinglist/:id" element={<ShoppingDetail />} />
           <Route path="/favorites" element={<FavoritesMain />} />
           <Route path="/settings" element={<Settings />} />

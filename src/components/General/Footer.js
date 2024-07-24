@@ -13,9 +13,11 @@ const Footer = () => {
   const navigate = useNavigate();
   const [showTractorDropdown, setShowTractorDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [showHeartDropdown, setShowHeartDropdown] = useState(false);
 
   const tractorRef = useRef(null);
   const userRef = useRef(null);
+  const heartRef = useRef(null);
 
   const cartItemsCount = useSelector(
     (state) => state.cart.currentCart.cart_ingredients.length
@@ -31,6 +33,9 @@ const Footer = () => {
     }
     if (userRef.current && !userRef.current.contains(event.target)) {
       setShowUserDropdown(false);
+    }
+    if (heartRef.current && !heartRef.current.contains(event.target)) {
+      setShowHeartDropdown(false);
     }
   };
 
@@ -65,9 +70,27 @@ const Footer = () => {
         <button onClick={() => handleIconClick("/landingpage")}>
           <HomeIcon />
         </button>
-        <button onClick={() => handleIconClick("/favorites")}>
-          <HeartIcon />
-        </button>
+        <div className="relative" ref={heartRef}>
+          <button onClick={() => setShowHeartDropdown(!showHeartDropdown)}>
+            <HeartIcon />
+          </button>
+          {showHeartDropdown && (
+            <div className="absolute bottom-full mb-2 bg-gray-700 rounded p-2">
+              <div
+                className="cursor-pointer"
+                onClick={() => handleIconClick("/favorites")}
+              >
+                Favoriten
+              </div>
+              <div
+                className="cursor-pointer"
+                onClick={() => handleIconClick("/shoppinglisten")}
+              >
+                Shoppingliste
+              </div>
+            </div>
+          )}
+        </div>
         <div className="relative" ref={userRef}>
           <button onClick={() => setShowUserDropdown(!showUserDropdown)}>
             <UserNoFillIcon />

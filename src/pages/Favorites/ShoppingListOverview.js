@@ -1,10 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import ShoppingListBox from "../../components/Shoppinglist/ShoppingListBox";
+import { fetchShoppingLists } from "../../store/recipe-slice";
 
-const ShoppingListOverview = ({ shoppingLists }) => {
+const ShoppingListOverview = () => {
+  const dispatch = useDispatch();
+  const { shoppingLists, loading } = useSelector((state) => state.recipes);
+  const userId = useSelector((state) => state.users.userId);
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(fetchShoppingLists(userId));
+    }
+  }, [dispatch, userId]);
+
   return (
     <div className="p-4 max-w-md mx-auto">
-      {shoppingLists && shoppingLists.length > 0 ? (
+      {loading && <p>Loading...</p>}
+      {!loading && shoppingLists && shoppingLists.length > 0 ? (
         shoppingLists.map((list) => (
           <ShoppingListBox key={list.id} shoppingList={list} />
         ))
