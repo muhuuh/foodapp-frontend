@@ -19,7 +19,7 @@ export const fetchUserProfile = createAsyncThunk(
       // Ensure favorited is properly initialized if it's null
       const favorited = data.favorited || {
         favorite_shops: [],
-        favorite_ingredients: [],
+        favorite_recipes: [],
       };
       return { ...data, favorited };
     } catch (err) {
@@ -56,7 +56,7 @@ export const toggleFavoriteShop = createAsyncThunk(
       const { userProfile } = getState().users;
       const favorited = userProfile.favorited || {
         favorite_shops: [],
-        favorite_ingredients: [],
+        favorite_recipes: [],
       };
 
       let updatedFavorites = [...favorited.favorite_shops];
@@ -94,8 +94,53 @@ export const toggleFavoriteShop = createAsyncThunk(
   }
 );
 
+export const toggleFavoriteRecipe = createAsyncThunk(
+  "user/toggleFavoriteRecipe",
+  async ({ userId, recipeId }, { getState, rejectWithValue }) => {
+    try {
+      const { userProfile } = getState().users;
+      console.log("UserProfile:", userProfile);
+
+      const favorited = userProfile.favorited || {
+        favorite_shops: [],
+        favorite_recipes: [],
+      };
+
+      let updatedFavorites = Array.isArray(favorited.favorite_recipes)
+        ? [...favorited.favorite_recipes]
+        : [];
+
+      if (updatedFavorites.includes(recipeId)) {
+        updatedFavorites = updatedFavorites.filter((id) => id !== recipeId);
+      } else {
+        updatedFavorites.push(recipeId);
+      }
+
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .update({
+          favorited: {
+            ...favorited,
+            favorite_recipes: updatedFavorites,
+          },
+        })
+        .eq("id", userId)
+        .select();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return { favorite_recipes: updatedFavorites };
+    } catch (err) {
+      console.error("Error in toggleFavoriteRecipe:", err);
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 const defaultState = {
-  userProfile: { favorited: { favorite_shops: [], favorite_ingredients: [] } },
+  userProfile: { favorited: { favorite_shops: [], favorite_recipes: [] } },
   userId: null,
   loading: false,
   error: null,
@@ -141,6 +186,10 @@ const usersSlice = createSlice({
       .addCase(toggleFavoriteShop.fulfilled, (state, action) => {
         state.userProfile.favorited.favorite_shops =
           action.payload.favorite_shops;
+      })
+      .addCase(toggleFavoriteRecipe.fulfilled, (state, action) => {
+        state.userProfile.favorited.favorite_recipes =
+          action.payload.favorite_recipes;
       });
   },
 });

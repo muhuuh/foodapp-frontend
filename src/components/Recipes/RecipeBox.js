@@ -1,12 +1,11 @@
-// components/Recipes/RecipeBox.js
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
   deleteRecipeFromDB,
-  toggleFavoriteRecipeInDB,
   updateRecipeCommentInDB,
 } from "../../store/recipe-slice";
+import { toggleFavoriteRecipe } from "../../store/user-slice";
 import { format } from "date-fns";
 import LoadingSpinner from "../../components/General/LoadingSpinner";
 import CommentModal from "./CommentModal";
@@ -14,22 +13,26 @@ import CommentModal from "./CommentModal";
 const RecipeBox = ({ recipe }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const userId = useSelector((state) => state.users.userId);
+  const userProfile = useSelector((state) => state.users.userProfile);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [comment, setComment] = useState(recipe.user_comment || "");
 
+  const isFavorited =
+    userProfile?.favorited?.favorite_recipes?.includes(recipe.id) || false;
+
   const handleDelete = (e) => {
-    e.stopPropagation(); // Prevent navigation
+    e.stopPropagation();
     dispatch(deleteRecipeFromDB(recipe.id));
   };
 
   const handleFavoriteToggle = (e) => {
-    e.stopPropagation(); // Prevent navigation
-    dispatch(
-      toggleFavoriteRecipeInDB({
-        recipeId: recipe.id,
-        favorited: !recipe.favorited,
-      })
-    );
+    e.stopPropagation();
+    if (!userId) {
+      console.error("No user ID found");
+      return;
+    }
+    dispatch(toggleFavoriteRecipe({ userId, recipeId: recipe.id }));
   };
 
   const handleNavigate = () => {
@@ -104,7 +107,7 @@ const RecipeBox = ({ recipe }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <button onClick={handleFavoriteToggle}>
-          {recipe.favorited ? "★" : "☆"}
+          {isFavorited ? "★" : "☆"}
         </button>
         <button onClick={handleDelete}>🗑️</button>
       </div>
