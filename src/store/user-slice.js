@@ -160,8 +160,35 @@ export const toggleFavoriteRecipe = createAsyncThunk(
   }
 );
 
+export const saveAIOutputToStore = createAsyncThunk(
+  "user/saveAIOutputToStore",
+  async (aiOutput, { getState, rejectWithValue }) => {
+    try {
+      console.log("aiOutput");
+      console.log(aiOutput);
+      const { userId } = getState().users;
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .update({ ai_output: aiOutput })
+        .eq("id", userId)
+        .select();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data[0].ai_output; // Return the updated AI output
+    } catch (err) {
+      console.error("Error in saveAIOutputToStore:", err);
+      return rejectWithValue(err.message);
+    }
+  }
+);
 const defaultState = {
-  userProfile: { favorited: { favorite_shops: [], favorite_recipes: [] } },
+  userProfile: {
+    favorited: { favorite_shops: [], favorite_recipes: [] },
+    ai_output: null,
+  },
   userId: null,
   favorites: {
     recipes: [],
@@ -229,6 +256,9 @@ const usersSlice = createSlice({
       .addCase(fetchFavoriteShops.rejected, (state, action) => {
         state.favorites.loading = false;
         state.favorites.error = action.payload;
+      })
+      .addCase(saveAIOutputToStore.fulfilled, (state, action) => {
+        state.userProfile.ai_output = action.payload;
       });
   },
 });

@@ -180,3 +180,80 @@ export const generateImageForRecipe = async (recipeTitle) => {
     throw error;
   }
 };
+
+//--------------------- Search ----------------------------
+
+export const getSearchResultsFromAI = async (
+  userInput,
+  searchType,
+  file,
+  ingredients
+) => {
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: "You are a helpful assistant.",
+        },
+        {
+          role: "user",
+          content: generatePromptSearch(
+            userInput,
+            searchType,
+            file,
+            ingredients
+          ),
+        },
+      ],
+      max_tokens: 3000,
+      temperature: 0.7,
+    });
+    console.log("response.choices[0]");
+    console.log(response.choices[0]);
+    const result = response.choices[0].message.content.trim();
+    const searchResults = parseModifyResultSearch(result)[0]; // Using parseModifyResult
+
+    return searchResults;
+  } catch (error) {
+    console.error("Error fetching search results from OpenAI:", error);
+    throw error;
+  }
+};
+
+const generatePromptSearch = (userInput, searchType, file, ingredients) => {
+  let ingredientsString = ingredients.join(", ");
+  let fileString = file
+    ? `Ein Bild des Artikels ist auch vorhanden: ${file.name}`
+    : `Es wurde kein Bild des Artikels bereitgestellt.`;
+
+  return `Der Benutzer sucht nach zutaten um etwas zu kochen. Beschreibung: ${userInput}. Ausgewählte Zutaten: ${ingredientsString}. ${fileString}. 
+  Bitte geben Sie eine JSON-Antwort im strengen JSON-Format mit der folgenden Struktur zurück: {"ingredients": [], "keywords": [], "explanation": ""}. In explantion sollte in 2-3 Sätze erklärt werden wieso diese Antwort ausgewählt worden ist. Es soll den User Kontext zum Ergbeniss der Suche geben`;
+};
+
+const parseModifyResultSearch = (result) => {
+  try {
+    const jsonString = result.match(/\{.*\}/s)?.[0]; // Extract the JSON part of the string
+    if (!jsonString) {
+      throw new Error("No JSON found in the response");
+    }
+    const parsedResult = JSON.parse(jsonString);
+    return [
+      {
+        ingredients: parsedResult.ingredients || "Keine Zutaten angegeben",
+        keywords: parsedResult.keywords || [],
+        explanation: parsedResult.explanation || "",
+      },
+    ];
+  } catch (error) {
+    console.error("Error parsing JSON result from OpenAI:", error);
+    return [
+      {
+        ingredients: "Zutaten konnten nicht analysiert werden.",
+        keywords: [],
+        explanation: "Erklärung konnte nicht analysiert werden.",
+      },
+    ];
+  }
+};
