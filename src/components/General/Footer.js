@@ -12,12 +12,14 @@ import UserNoFillIcon from "./Icons/UserNoFillIcon";
 const Footer = () => {
   const navigate = useNavigate();
   const [showTractorDropdown, setShowTractorDropdown] = useState(false);
-  const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [showPotDropdown, setShowPotDropdown] = useState(false);
   const [showHeartDropdown, setShowHeartDropdown] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
 
   const tractorRef = useRef(null);
-  const userRef = useRef(null);
+  const potRef = useRef(null);
   const heartRef = useRef(null);
+  const userRef = useRef(null);
 
   const cartItemsCount = useSelector(
     (state) => state.cart.currentCart.cart_ingredients.length
@@ -25,17 +27,24 @@ const Footer = () => {
 
   const handleIconClick = (path) => {
     navigate(path);
+    setShowTractorDropdown(false);
+    setShowPotDropdown(false);
+    setShowHeartDropdown(false);
+    setShowUserDropdown(false);
   };
 
   const handleClickOutside = (event) => {
     if (tractorRef.current && !tractorRef.current.contains(event.target)) {
       setShowTractorDropdown(false);
     }
-    if (userRef.current && !userRef.current.contains(event.target)) {
-      setShowUserDropdown(false);
+    if (potRef.current && !potRef.current.contains(event.target)) {
+      setShowPotDropdown(false);
     }
     if (heartRef.current && !heartRef.current.contains(event.target)) {
       setShowHeartDropdown(false);
+    }
+    if (userRef.current && !userRef.current.contains(event.target)) {
+      setShowUserDropdown(false);
     }
   };
 
@@ -64,9 +73,27 @@ const Footer = () => {
             </div>
           )}
         </div>
-        <button onClick={() => handleIconClick("/recipe")}>
-          <PotIcon />
-        </button>
+        <div className="relative" ref={potRef}>
+          <button onClick={() => setShowPotDropdown(!showPotDropdown)}>
+            <PotIcon />
+          </button>
+          {showPotDropdown && (
+            <div className="absolute bottom-full mb-2 bg-gray-700 rounded p-2">
+              <div
+                className="cursor-pointer"
+                onClick={() => handleIconClick("/recipe_creation")}
+              >
+                Kreieren
+              </div>
+              <div
+                className="cursor-pointer"
+                onClick={() => handleIconClick("/recipe_overview")}
+              >
+                Rezepte
+              </div>
+            </div>
+          )}
+        </div>
         <button onClick={() => handleIconClick("/landingpage")}>
           <HomeIcon />
         </button>

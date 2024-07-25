@@ -76,7 +76,7 @@ function App() {
           <Route path="/ingredient_overview" element={<IngredientMain />} />
           <Route path="/shop_overview" element={<ShopMain />} />
           <Route path="/shop_detailpage" element={<ShopDetailPage />} />
-          <Route path="/recipe" element={<RecipeMain />} />
+          <Route path="/recipe_creation" element={<RecipeMain />} />
           <Route path="/recipe_overview" element={<RecipeOverview />} />
           <Route path="/recipe/:id" element={<RecipeDetail />} />
           <Route path="/shoppinglisten" element={<ShoppingListOverview />} />
