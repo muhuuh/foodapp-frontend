@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Title from "../../components/General/Title";
 import FileUpload from "../../components/AI/FileUpload";
 import TextAIInputs from "../../components/AI/TextAIInputs";
 import { getSearchResultsFromAI } from "../../services/openaiApi";
-import { saveAIOutputToStore } from "../../store/user-slice";
-import IngredientCarousel from "../../components/Search/IngredientCarousel";
 import {
+  saveAIOutputToStore,
   fetchIngredients,
   fetchIngredientsByName,
 } from "../../store/ingredient-slice";
+import IngredientCarousel from "../../components/Search/IngredientCarousel";
+import LoadingSpinner from "../../components/General/LoadingSpinner";
 
 const LocalSearch = () => {
   const title = "Suche";
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const ingredient_general_available = useSelector(
     (state) => state.ingredients.ingredient_general_available
   );
@@ -31,16 +34,14 @@ const LocalSearch = () => {
     dispatch(fetchIngredients());
   }, [dispatch]);
 
-  console.log("ingredient_general_available");
-  console.log(ingredient_general_available);
-
   useEffect(() => {
-    if (ai_ingredient_search.ingredients_available) {
+    if (ai_ingredient_search?.ingredients_available?.length > 0) {
       dispatch(
         fetchIngredientsByName(ai_ingredient_search.ingredients_available)
       );
+      navigate("/ingredient_overview");
     }
-  }, [dispatch, ai_ingredient_search.ingredients_available]);
+  }, [dispatch, ai_ingredient_search, navigate]);
 
   const handleToggle = () => {
     setSearchType(searchType === "Ingredients" ? "Shop" : "Ingredients");
@@ -64,10 +65,7 @@ const LocalSearch = () => {
         selectedIngredients,
         ingredient_general_available
       );
-
-      console.log("result ai output2");
-      console.log(result);
-      //dispatch(saveAIOutputToStore(result));
+      dispatch(saveAIOutputToStore(result));
     } catch (error) {
       console.error("Error fetching search results from OpenAI:", error);
     } finally {
@@ -78,7 +76,6 @@ const LocalSearch = () => {
   return (
     <div className="p-4 max-w-md mx-auto">
       <Title text={title} />
-
       <div className="flex justify-center my-4 items-center">
         <span className="mr-2">Zutaten</span>
         <label className="inline-flex items-center cursor-pointer">
@@ -88,7 +85,7 @@ const LocalSearch = () => {
             checked={searchType === "Shop"}
             onChange={handleToggle}
           />
-          <div className="w-11 h-6 bg-gray-200 rounded-full peer-focus:ring-4 peer-focus:ring-teal-300 peer dark:bg-gray-700 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-500"></div>
+          <div className="w-11 h-6 bg-gray-200 rounded-full peer-focus:ring-4 peer-focus:ring-teal-300 dark:bg-gray-700 peer dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-500"></div>
         </label>
         <span className="ml-2">Shop</span>
       </div>
@@ -110,7 +107,7 @@ const LocalSearch = () => {
       </button>
       {isLoading && (
         <div className="flex flex-col items-center mt-4">
-          <div className="loader"></div>
+          <LoadingSpinner />
           <span className="text-sm text-gray-600">Bitte warten...</span>
         </div>
       )}

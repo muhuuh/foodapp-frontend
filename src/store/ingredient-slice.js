@@ -44,7 +44,11 @@ export const fetchIngredientsByName = createAsyncThunk(
 
 const defaultState = {
   ingredient_general_available: [],
-  ai_ingredient_search: {},
+  ai_ingredient_search: {
+    ingredients_available: [],
+    ingredients_general: [],
+    explanation: "",
+  },
   ingredients: [],
   loading: false,
   error: null,
