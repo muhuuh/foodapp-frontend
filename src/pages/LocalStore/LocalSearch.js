@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Title from "../../components/General/Title";
 import FileUpload from "../../components/AI/FileUpload";
@@ -6,15 +6,41 @@ import TextAIInputs from "../../components/AI/TextAIInputs";
 import { getSearchResultsFromAI } from "../../services/openaiApi";
 import { saveAIOutputToStore } from "../../store/user-slice";
 import IngredientCarousel from "../../components/Search/IngredientCarousel";
+import {
+  fetchIngredients,
+  fetchIngredientsByName,
+} from "../../store/ingredient-slice";
 
 const LocalSearch = () => {
   const title = "Suche";
+  const dispatch = useDispatch();
+  const ingredient_general_available = useSelector(
+    (state) => state.ingredients.ingredient_general_available
+  );
+  const ai_ingredient_search = useSelector(
+    (state) => state.ingredients.ai_ingredient_search
+  );
+
   const [searchType, setSearchType] = useState("Ingredients");
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [userInput, setUserInput] = useState("");
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchIngredients());
+  }, [dispatch]);
+
+  console.log("ingredient_general_available");
+  console.log(ingredient_general_available);
+
+  useEffect(() => {
+    if (ai_ingredient_search.ingredients_available) {
+      dispatch(
+        fetchIngredientsByName(ai_ingredient_search.ingredients_available)
+      );
+    }
+  }, [dispatch, ai_ingredient_search.ingredients_available]);
 
   const handleToggle = () => {
     setSearchType(searchType === "Ingredients" ? "Shop" : "Ingredients");
@@ -35,11 +61,13 @@ const LocalSearch = () => {
         userInput,
         searchType,
         file,
-        selectedIngredients
+        selectedIngredients,
+        ingredient_general_available
       );
-      console.log("result search");
+
+      console.log("result ai output2");
       console.log(result);
-      dispatch(saveAIOutputToStore(result));
+      //dispatch(saveAIOutputToStore(result));
     } catch (error) {
       console.error("Error fetching search results from OpenAI:", error);
     } finally {

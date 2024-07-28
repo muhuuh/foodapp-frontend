@@ -187,7 +187,8 @@ export const getSearchResultsFromAI = async (
   userInput,
   searchType,
   file,
-  ingredients
+  selectedIngredients,
+  ingredient_general_available
 ) => {
   try {
     const response = await openai.chat.completions.create({
@@ -203,17 +204,19 @@ export const getSearchResultsFromAI = async (
             userInput,
             searchType,
             file,
-            ingredients
+            selectedIngredients,
+            ingredient_general_available
           ),
         },
       ],
       max_tokens: 3000,
       temperature: 0.7,
     });
-    console.log("response.choices[0]");
-    console.log(response.choices[0]);
     const result = response.choices[0].message.content.trim();
-    const searchResults = parseModifyResultSearch(result)[0]; // Using parseModifyResult
+    const searchResults = parseModifyResultSearch(result)[0];
+    console.log("result ai output");
+    console.log(result);
+    console.log(searchResults);
 
     return searchResults;
   } catch (error) {
@@ -222,14 +225,25 @@ export const getSearchResultsFromAI = async (
   }
 };
 
-const generatePromptSearch = (userInput, searchType, file, ingredients) => {
-  let ingredientsString = ingredients.join(", ");
+const generatePromptSearch = (
+  userInput,
+  searchType,
+  file,
+  selectedIngredients,
+  ingredient_general_available
+) => {
+  let ingredientsString = selectedIngredients.join(", ");
+  let ingredient_general_availableString =
+    ingredient_general_available.join(", ");
   let fileString = file
     ? `Ein Bild des Artikels ist auch vorhanden: ${file.name}`
     : `Es wurde kein Bild des Artikels bereitgestellt.`;
 
-  return `Der Benutzer sucht nach zutaten um etwas zu kochen. Beschreibung: ${userInput}. Ausgewählte Zutaten: ${ingredientsString}. ${fileString}. 
-  Bitte geben Sie eine JSON-Antwort im strengen JSON-Format mit der folgenden Struktur zurück: {"ingredients": [], "keywords": [], "explanation": ""}. In explantion sollte in 2-3 Sätze erklärt werden wieso diese Antwort ausgewählt worden ist. Es soll den User Kontext zum Ergbeniss der Suche geben`;
+  return `Der Benutzer sucht nach Zutaten, um etwas zu kochen. Beschreibung: ${userInput}. Zusätzlich ausgewählte Zutaten: ${ingredientsString}. ${fileString}. 
+  Bitte geben Sie eine JSON-Antwort im strengen JSON-Format mit der folgenden Struktur zurück: {"ingredients_general": [], "ingredients_available": [], "explanation": ""}. 
+  In "ingredients_general" sollen alle Zutaten gelistet werden, die optimalerweise benötigt werden, 
+  wobei in "ingredients_available" nur Zutaten aus dieser Liste: ${ingredient_general_availableString} ausgewählt werden dürfen, die passen könnten (es ist okay, wenn Zutaten fehlen, da nicht vorhanden).
+  In "explanation" sollte in 2-3 Sätzen erklärt werden, wieso diese Antwort ausgewählt worden ist. Es soll dem User Kontext zum Ergebnis der Suche geben.`;
 };
 
 const parseModifyResultSearch = (result) => {
@@ -241,8 +255,8 @@ const parseModifyResultSearch = (result) => {
     const parsedResult = JSON.parse(jsonString);
     return [
       {
-        ingredients: parsedResult.ingredients || "Keine Zutaten angegeben",
-        keywords: parsedResult.keywords || [],
+        ingredients_general: parsedResult.ingredients_general || [],
+        ingredients_available: parsedResult.ingredients_available || [],
         explanation: parsedResult.explanation || "",
       },
     ];
@@ -250,8 +264,8 @@ const parseModifyResultSearch = (result) => {
     console.error("Error parsing JSON result from OpenAI:", error);
     return [
       {
-        ingredients: "Zutaten konnten nicht analysiert werden.",
-        keywords: [],
+        ingredients_general: [],
+        ingredients_available: [],
         explanation: "Erklärung konnte nicht analysiert werden.",
       },
     ];
