@@ -9,19 +9,21 @@ const IngredientMain = () => {
   const [showUnavailable, setShowUnavailable] = useState(false);
   const navigate = useNavigate();
 
-  // Summarize the ingredients
+  const { userId } = useSelector((state) => state.users);
+  console.log(userId);
+
   const summarizedIngredients = data.ingredients.reduce((acc, ingredient) => {
     const found = acc.find(
       (item) => item.general_name === ingredient.general_name
     );
     if (found) {
       found.count += 1;
-      found.standardised_price += ingredient.standardised_price; // Assuming standardised_price is a number
+      found.standardised_price += ingredient.standardised_price;
     } else {
       acc.push({
         ...ingredient,
         count: 1,
-        standardised_price: ingredient.standardised_price, // Assuming standardised_price is a number
+        standardised_price: ingredient.standardised_price,
       });
     }
     return acc;
@@ -52,7 +54,7 @@ const IngredientMain = () => {
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto mb-20">
+    <div className="p-4 max-w-md mx-auto mb-16">
       <h1 className="text-2xl font-bold mb-4">Einkaufen</h1>
       <p className="mb-4">{data.ai_ingredient_search.explanation}</p>
       {summarizedIngredients.map((ingredient, index) => (

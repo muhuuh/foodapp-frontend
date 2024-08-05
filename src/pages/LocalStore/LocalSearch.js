@@ -29,19 +29,26 @@ const LocalSearch = () => {
   const [userInput, setUserInput] = useState("");
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [navigateToIngredients, setNavigateToIngredients] = useState(false);
+
+  console.log("main ingredient");
 
   useEffect(() => {
     dispatch(fetchIngredients());
   }, [dispatch]);
 
   useEffect(() => {
-    if (ai_ingredient_search?.ingredients_available?.length > 0) {
+    if (
+      navigateToIngredients &&
+      ai_ingredient_search?.ingredients_available?.length > 0
+    ) {
       dispatch(
         fetchIngredientsByName(ai_ingredient_search.ingredients_available)
       );
       navigate("/ingredient_overview");
+      setNavigateToIngredients(false); // Reset the navigation control
     }
-  }, [dispatch, ai_ingredient_search, navigate]);
+  }, [dispatch, ai_ingredient_search, navigate, navigateToIngredients]);
 
   const handleToggle = () => {
     setSearchType(searchType === "Ingredients" ? "Shop" : "Ingredients");
@@ -66,6 +73,7 @@ const LocalSearch = () => {
         ingredient_general_available
       );
       dispatch(saveAIOutputToStore(result));
+      setNavigateToIngredients(true); // Set the navigation control to true
     } catch (error) {
       console.error("Error fetching search results from OpenAI:", error);
     } finally {

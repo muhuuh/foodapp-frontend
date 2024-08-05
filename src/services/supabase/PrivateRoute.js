@@ -1,15 +1,12 @@
-import React, { useContext } from "react";
-import { Outlet, Navigate } from "react-router-dom";
-import { AuthContext } from "./authContext";
+// services/supabase/PrivateRoute.js
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const PrivateRoute = () => {
-  const { user, loading } = useContext(AuthContext);
+  const { userId } = useSelector((state) => state.users);
 
-  if (loading) {
-    return <div>Loading...</div>; // or any loading spinner
-  }
-
-  return user ? <Outlet /> : <Navigate to="/signin" replace />;
+  return userId ? <Outlet /> : <Navigate to="/signin" />;
 };
 
 export default PrivateRoute;
