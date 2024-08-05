@@ -23,7 +23,7 @@ const Signin = () => {
       console.log("User signed in");
       console.log(user);
       if (user) {
-        navigate("/main_view");
+        navigate("/ingredient_search");
       }
       setMessage(null);
     }

@@ -13,7 +13,7 @@ import Settings from "./pages/Login/Settings";
 import RecipeMain from "./pages/Recipe/RecipeMain";
 import RecipeOverview from "./pages/Recipe/RecipeOverview";
 import RecipeDetail from "./pages/Recipe/RecipeDetail";
-import LocalIngredientSearch from "./pages/LocalStore/LocalIngredientSearch";
+import LocalIngredientSearch from "./pages/LocalStore/Ingredients/LocalIngredientSearch";
 import Landingpage from "./pages/Landingpage";
 import FavoritesMain from "./pages/Favorites/FavoritesMain";
 import Footer from "./components/General/Footer";

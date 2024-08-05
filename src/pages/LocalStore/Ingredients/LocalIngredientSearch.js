@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import Title from "../../components/General/Title";
-import FileUpload from "../../components/AI/FileUpload";
-import TextAIInputs from "../../components/AI/TextAIInputs";
-import { getSearchResultsFromAI } from "../../services/openaiApi";
+import Title from "../../../components/General/Title";
+import FileUpload from "../../../components/AI/FileUpload";
+import TextAIInputs from "../../../components/AI/TextAIInputs";
+import { getSearchResultsFromAI } from "../../../services/openaiApi";
 import {
   saveAIOutputToStore,
   fetchIngredients,
   fetchIngredientsByName,
-} from "../../store/ingredient-slice";
-import IngredientCarousel from "../../components/Search/IngredientCarousel";
-import LoadingSpinner from "../../components/General/LoadingSpinner";
+} from "../../../store/ingredient-slice";
+import IngredientCarousel from "../../../components/Search/IngredientCarousel";
+import LoadingSpinner from "../../../components/General/LoadingSpinner";
+import CategorySearch from "../../../components/Search/CategorySearch";
 
 const LocalIngredientSearch = () => {
   const title = "Suche";
@@ -24,7 +25,7 @@ const LocalIngredientSearch = () => {
     (state) => state.ingredients.ai_ingredient_search
   );
 
-  const [searchType, setSearchType] = useState("Durchforsten");
+  const [searchType, setSearchType] = useState("Frag AI");
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [userInput, setUserInput] = useState("");
   const [file, setFile] = useState(null);
@@ -51,7 +52,7 @@ const LocalIngredientSearch = () => {
   }, [dispatch, ai_ingredient_search, navigate, navigateToIngredients]);
 
   const handleToggle = () => {
-    setSearchType(searchType === "Durchforsten" ? "Frag AI" : "Durchforsten");
+    setSearchType(searchType === "Frag AI" ? "Durchforsten" : "Frag AI");
   };
 
   const handleInputChange = (input) => {
@@ -85,19 +86,21 @@ const LocalIngredientSearch = () => {
     <div className="p-4 max-w-md mx-auto">
       <Title text={title} />
       <div className="flex justify-center my-4 items-center">
-        <span className="mr-2">Durchforsten</span>
+        <span className="mr-2">Frag AI</span>
         <label className="inline-flex items-center cursor-pointer">
           <input
             type="checkbox"
             className="sr-only peer"
-            checked={searchType === "Frag AI"}
+            checked={searchType === "Durchforsten"}
             onChange={handleToggle}
           />
           <div className="w-11 h-6 bg-gray-200 rounded-full peer-focus:ring-4 peer-focus:ring-teal-300 dark:bg-gray-700 peer dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-500"></div>
         </label>
-        <span className="ml-2">Frag AI</span>
+        <span className="ml-2">Durchforsten</span>
       </div>
       {searchType === "Durchforsten" ? (
+        <CategorySearch />
+      ) : (
         <>
           <IngredientCarousel
             selectedIngredients={selectedIngredients}
@@ -122,11 +125,6 @@ const LocalIngredientSearch = () => {
             </div>
           )}
         </>
-      ) : (
-        // Placeholder for the AI Search Component
-        <div className="flex flex-col items-center mt-4">
-          <span className="text-sm text-gray-600">AI Search Component</span>
-        </div>
       )}
     </div>
   );

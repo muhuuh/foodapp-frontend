@@ -1,7 +1,11 @@
+// components/Store/Ingredient/IngredientBox.js
 import React from "react";
 import IngredientDetail from "./IngredientDetail";
 
 const IngredientBox = ({ ingredient, onClick, isSelected }) => {
+  const count = ingredient.count || 1; // Default count to 1 if it doesn't exist
+  const pricePerKg = (ingredient.standardised_price / count).toFixed(2);
+
   return (
     <div>
       <div
@@ -10,11 +14,8 @@ const IngredientBox = ({ ingredient, onClick, isSelected }) => {
       >
         <div>
           <h2 className="text-lg font-bold">{ingredient.general_name}</h2>
-          <p>{ingredient.count} Verkäufer</p>
-          <p>
-            {(ingredient.standardised_price / ingredient.count).toFixed(2)}€ /
-            kg
-          </p>
+          <p>{count} Verkäufer</p>
+          <p>{pricePerKg}€ / kg</p>
         </div>
         <img
           src={ingredient.ingredient_image}

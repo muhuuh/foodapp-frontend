@@ -1,3 +1,4 @@
+// store/ingredient-slice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import supabase from "../services/supabase/supabase";
 
@@ -42,6 +43,25 @@ export const fetchIngredientsByName = createAsyncThunk(
   }
 );
 
+// Fetch ingredients by category
+export const fetchIngredientsByCategory = createAsyncThunk(
+  "ingredients/fetchIngredientsByCategory",
+  async (category, { rejectWithValue }) => {
+    try {
+      const { data, error } = await supabase
+        .from("ingredients")
+        .select("*")
+        .eq("category", category);
+      if (error) {
+        throw new Error(error.message);
+      }
+      return { category, data };
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 const defaultState = {
   ingredient_general_available: [],
   ai_ingredient_search: {
@@ -50,6 +70,7 @@ const defaultState = {
     explanation: "",
   },
   ingredients: [],
+  ingredientsByCategory: {},
   loading: false,
   error: null,
 };
@@ -85,6 +106,19 @@ const ingredientSlice = createSlice({
         state.ingredients = action.payload;
       })
       .addCase(fetchIngredientsByName.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchIngredientsByCategory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchIngredientsByCategory.fulfilled, (state, action) => {
+        state.loading = false;
+        state.ingredientsByCategory[action.payload.category] =
+          action.payload.data;
+      })
+      .addCase(fetchIngredientsByCategory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
