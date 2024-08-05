@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import IngredientBox from "../../components/Store/Ingredient/IngredientBox";
+import IngredientBox from "../../../components/Store/Ingredient/IngredientBox";
 
 const IngredientMain = () => {
   const data = useSelector((state) => state.ingredients);
@@ -50,7 +50,7 @@ const IngredientMain = () => {
   };
 
   const handleBackClick = () => {
-    navigate("/main_view");
+    navigate("/ingredient_search");
   };
 
   return (

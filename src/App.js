@@ -13,13 +13,13 @@ import Settings from "./pages/Login/Settings";
 import RecipeMain from "./pages/Recipe/RecipeMain";
 import RecipeOverview from "./pages/Recipe/RecipeOverview";
 import RecipeDetail from "./pages/Recipe/RecipeDetail";
-import LocalSearch from "./pages/LocalStore/LocalSearch";
+import LocalIngredientSearch from "./pages/LocalStore/LocalIngredientSearch";
 import Landingpage from "./pages/Landingpage";
 import FavoritesMain from "./pages/Favorites/FavoritesMain";
 import Footer from "./components/General/Footer";
 import ShoppingDetail from "./pages/Favorites/ShoppingDetail";
 import ShopMain from "./pages/LocalStore/Shop/ShopMain";
-import IngredientMain from "./pages/LocalStore/IngredientMain";
+import IngredientMain from "./pages/LocalStore/Ingredients/IngredientMain";
 import CartMain from "./pages/Cart/CartMain";
 import ShopDetailPage from "./pages/LocalStore/Shop/ShopDetailPage";
 import ShoppingListOverview from "./pages/Favorites/ShoppingListOverview";
@@ -72,7 +72,10 @@ function App() {
         <Route path="/reset_password" element={<ResetPassword />} />
         <Route path="/landingpage" element={<Landingpage />} />
         <Route element={<PrivateRoute />}>
-          <Route path="/main_view" element={<LocalSearch />} />
+          <Route
+            path="/ingredient_search"
+            element={<LocalIngredientSearch />}
+          />
           <Route path="/ingredient_overview" element={<IngredientMain />} />
           <Route path="/shop_overview" element={<ShopMain />} />
           <Route path="/shop_detailpage" element={<ShopDetailPage />} />

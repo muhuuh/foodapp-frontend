@@ -66,9 +66,15 @@ const Footer = () => {
             <div className="absolute bottom-full mb-2 bg-gray-700 rounded p-2">
               <div
                 className="cursor-pointer"
-                onClick={() => handleIconClick("/main_view")}
+                onClick={() => handleIconClick("/ingredient_search")}
               >
-                Einkaufen
+                Zutaten finden
+              </div>
+              <div
+                className="cursor-pointer"
+                onClick={() => handleIconClick("/shop_search")}
+              >
+                Shop finden
               </div>
             </div>
           )}
